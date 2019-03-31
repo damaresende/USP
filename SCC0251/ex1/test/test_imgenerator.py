@@ -26,65 +26,85 @@ class IMGeneratorTests(unittest.TestCase):
         Test function 1
         '''
         gen = IMGenerator('ex1.npy', 1024, 1, 1, 720, 6, 1)
-        img = gen()
+        img = gen.generate_img()
         
+        ref_np = (np.load(os.path.join(os.getcwd(), 'files/ex1.npy'))).astype(np.uint8)
         ref_img = imageio.imread(os.path.join(os.getcwd(), 'files/ex1_xy.png'))
         ref_img = ref_img.astype(np.uint8)
           
-        print('Function 1: %s' % gen.calc_rmse(img, ref_img))
+        print('Function 1 PNG: %s' % gen.calc_rmse(img, ref_img))
         self.assertTrue(gen.calc_rmse(img, ref_img) < 1000)
+        
+        print('Function 1 NPY: %s' % gen.calc_rmse(img, ref_np))
+        self.assertTrue(gen.calc_rmse(img, ref_np) < 1000)
               
     def test_func_two(self):
         '''
         Test function 2
         '''
         gen = IMGenerator('ex2.npy', 720, 2, 32, 360, 4, 1)
-        img = gen()
+        img = gen.generate_img()
         
+        ref_np = (np.load(os.path.join(os.getcwd(), 'files/ex2.npy'))).astype(np.uint8)
         ref_img = imageio.imread(os.path.join(os.getcwd(), 'files/ex2_sin.png'))
         ref_img = ref_img.astype(np.uint8)
           
-        print('Function 2: %s' % gen.calc_rmse(img, ref_img))
+        print('Function 2 PNG: %s' % gen.calc_rmse(img, ref_img))
         self.assertTrue(gen.calc_rmse(img, ref_img) < 1000)
+        
+        print('Function 2 NPY: %s' % gen.calc_rmse(img, ref_np))
+        self.assertTrue(gen.calc_rmse(img, ref_np) < 1000)
  
     def test_func_three(self):
         '''
         Test function 3
         '''
         gen = IMGenerator('ex3.npy', 720, 3, 1001, 256, 3, 1)
-        img = gen()
+        img = gen.generate_img()
         
+        ref_np = (np.load(os.path.join(os.getcwd(), 'files/ex3.npy'))).astype(np.uint8)
         ref_img = imageio.imread(os.path.join(os.getcwd(), 'files/ex3_quad.png'))
         ref_img = ref_img.astype(np.uint8)
           
-        print('Function 3: %s' % gen.calc_rmse(img, ref_img))
+        print('Function 3 PNG: %s' % gen.calc_rmse(img, ref_img))
         self.assertTrue(gen.calc_rmse(img, ref_img) < 1000)
+        
+        print('Function 3 NPY: %s' % gen.calc_rmse(img, ref_np))
+        self.assertTrue(gen.calc_rmse(img, ref_np) < 1000)
                  
     def test_func_four(self):
         '''
         Test function 4
         '''
         gen = IMGenerator('ex4.npy', 1024, 4, 1, 256, 5, 13)
-        img = gen()
+        img = gen.generate_img()
         
+        ref_np = (np.load(os.path.join(os.getcwd(), 'files/ex4.npy'))).astype(np.uint8)
         ref_img = imageio.imread(os.path.join(os.getcwd(), 'files/ex4_rand.png'))
         ref_img = ref_img.astype(np.uint8)
           
-        print('Function 4: %s' % gen.calc_rmse(img, ref_img))
+        print('Function 4 PNG: %s' % gen.calc_rmse(img, ref_img))
         self.assertTrue(gen.calc_rmse(img, ref_img) < 1000)
+        
+        print('Function 4 NPY: %s' % gen.calc_rmse(img, ref_np))
+        self.assertTrue(gen.calc_rmse(img, ref_np) < 1000)
            
     def test_func_five(self):
         '''
         Test function 5
         '''
         gen = IMGenerator('ex5.npy', 500, 5, 1, 250, 8, 6666)
-        img = gen()
+        img = gen.generate_img()
         
+        ref_np = (np.load(os.path.join(os.getcwd(), 'files/ex5.npy'))).astype(np.uint8)
         ref_img = imageio.imread(os.path.join(os.getcwd(), 'files/ex5_walk.png'))
         ref_img = ref_img.astype(np.uint8)
           
-        print('Function 5: %s' % gen.calc_rmse(img, ref_img))
+        print('Function 5 IMG: %s' % gen.calc_rmse(img, ref_img))
         self.assertTrue(gen.calc_rmse(img, ref_img) < 1000)
+        
+        print('Function 5 NPY: %s' % gen.calc_rmse(img, ref_np))
+        self.assertTrue(gen.calc_rmse(img, ref_np) < 1000)
         
     def test_downsamping(self):
         '''
@@ -102,5 +122,5 @@ class IMGeneratorTests(unittest.TestCase):
         """
         gen = IMGenerator('', 1024, 1, 1, 2, 1, 1)
          
-        self.assertTrue(np.amax(gen.normalize(gen(), 8)) < pow(2, 8))
-        self.assertTrue(np.amin(gen.normalize(gen(), 8)) >= 0)
+        self.assertTrue(np.amax(gen.normalize(gen.generate_img(), 8)) < pow(2, 8))
+        self.assertTrue(np.amin(gen.normalize(gen.generate_img(), 8)) >= 0)

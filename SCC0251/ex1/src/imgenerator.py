@@ -9,7 +9,7 @@ Image generator
     Institute of Mathematics and Computer Science (ICMC)
     Image Processing Class (SCC0251)
 '''
-
+import os
 import random
 import numpy as np
 from math import sin, cos, pow, floor, sqrt
@@ -37,7 +37,7 @@ class IMGenerator():
         self.B = B
         self.S = S
         
-    def __call__(self):
+    def generate_img(self):
         '''
         Generates images
         '''
@@ -115,8 +115,6 @@ class IMGenerator():
             img[x][y] = 1
             x = (x + random.randint(-1,1)) % self.C
             y = (y + random.randint(-1,1)) % self.C
-            
-            
 
         return self.quantitize(self.downsampling(self.normalize(img, 16)))
     
@@ -139,10 +137,6 @@ class IMGenerator():
         @param img: 2D numpy array to reduce dimensions
         '''
         new_img = np.zeros((self.N, self.N))
-        
-#         for x in range(0, self.N):
-#             for y in range(0, self.N):
-#                 new_img[x][y] = img[floor(x * self.C / self.N)][floor(y * self.C / self.N)]
 
         r = floor(self.C / self.N)
         for x in range(0, self.N):
@@ -173,5 +167,13 @@ class IMGenerator():
         @param img2: 2D numpy array
         @return integer with RMSE value
         '''
-        return round(sqrt(sum(sum(np.multiply((img1 - img2), (img1 - img2))))), 4) 
-        
+        return round(sqrt(sum(sum(np.multiply((img1 - img2), (img1 - img2))))), 4)
+    
+# def main():
+#     gen = IMGenerator(str(input()).rstrip(), int(input()), int(input()), int(input()), int(input()), int(input()), int(input())) 
+#     ref = (np.load(os.path.join(os.getcwd(), gen.r))).astype(np.uint8)
+#     img = gen.generate_img()
+#     print(gen.calc_rmse(img, ref))
+#     
+# if __name__ == '__main__':
+#     main()
