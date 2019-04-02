@@ -7,7 +7,7 @@ Image generator
 
 @organization: University of Sao Paulo (USP)
     Institute of Mathematics and Computer Science (ICMC)
-    Image Processing Class (SCC0251)
+    Image Processing Class (SCC5830)
 '''
 import os
 import random

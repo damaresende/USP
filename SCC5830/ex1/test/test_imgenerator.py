@@ -7,7 +7,7 @@ Tests for module imgenerator
 
 @organization: University of Sao Paulo (USP)
     Institute of Mathematics and Computer Science (ICMC)
-    Image Processing Class (SCC0251)
+    Image Processing Class (SCC5830)
 '''
 
 import os
@@ -16,7 +16,7 @@ import unittest
 import numpy as np
 
 
-from SCC0251.ex1.src.imgenerator import IMGenerator
+from SCC5830.ex1.src.imgenerator import IMGenerator
 
 
 class IMGeneratorTests(unittest.TestCase):
