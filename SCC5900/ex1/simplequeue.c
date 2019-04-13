@@ -8,24 +8,25 @@
  *                Project of Algorithms Class (SCC5900)
  */
 #include <stdlib.h>
-#include "charqueue.h"
 
-c_queue* create() {
-	c_queue *q = (c_queue*)malloc(sizeof(c_queue));
+#include "simplequeue.h"
+
+s_queue* create() {
+	s_queue *q = (s_queue*)malloc(sizeof(s_queue));
 	q->start = NULL;
 	q->end = NULL;
 	return q;
 }
 
-int is_empty(c_queue *q) {
+int is_empty(s_queue *q) {
 	if (q->end == NULL && q->start == NULL) {
 		return 1;
 	}
 	return 0;
 }
 
-void push(char value, c_queue *q){
-	c_node *n = (c_node*)malloc(sizeof(c_node));
+void push(int value, s_queue *q) {
+	s_node *n = (s_node*)malloc(sizeof(s_node));
 	n->next = NULL;
 	n->value = value;
 
@@ -38,19 +39,15 @@ void push(char value, c_queue *q){
 	}
 }
 
-char pop(c_queue *q){
+int pop(s_queue *q) {
 	if (is_empty(q)) {
-		return ' ';
+		return -1;
 	}
-
-	char value = q->start->value;
-	c_node *aux = q->start;
+	int value = q->start->value;
+	s_node *aux = q->start;
 	q->start = q->start->next;
 	free(aux);
 
 	return value;
 }
-
-
-
 
