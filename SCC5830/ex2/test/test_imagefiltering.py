@@ -108,7 +108,6 @@ class IMGFilteringTests(unittest.TestCase):
         '''
         user_input = ['files/flower.png', '3', '5', '-1 -1 -1 -1 -1', '-1 -1 -1 -1 -1', 
                       '-1 -1 24 -1 -1 ', '-1 -1 -1 -1 -1', '-1 -1 -1 -1 -1', '119']
-        expected_output = 117.1761
          
         with patch('builtins.input', side_effect=user_input):
             img, filterd_img, rmse = imagefiltering.run_filtering()
@@ -123,16 +122,24 @@ class IMGFilteringTests(unittest.TestCase):
         plt.imshow(filterd_img, cmap="gray", vmin=0, vmax=1)
         plt.show()
              
-#     def test_median_filter(self):
-#         '''
-#         Test median filter
-#         '''
-#         user_input = ['files/camera_saltpepper.png', '4', '5']
-#         expected_output = 43.1823
-#         
-#         with patch('builtins.input', side_effect=user_input):
-#             result = imagefiltering.run_filtering()
-#             self.assertEqual(expected_output, result)
+    def test_median_filter(self):
+        '''
+        Test median filter
+        '''
+        user_input = ['files/camera_saltpepper.png', '4', '5']
+         
+        with patch('builtins.input', side_effect=user_input):
+            img, filterd_img, rmse = imagefiltering.run_filtering()
+            self.assertTrue(rmse < 1000)
+              
+        print('Test Median Filter RMSE: %s' % str(rmse))
+         
+        plt.figure()
+        plt.subplot(121)
+        plt.imshow(img, cmap="gray", vmin=0, vmax=255)
+        plt.subplot(122)
+        plt.imshow(filterd_img, cmap="gray", vmin=0, vmax=255)
+        plt.show()
 
 if __name__ == '__main__':
     unittest.main()

@@ -136,7 +136,8 @@ class Filter1D(IMGFiltering):
             
     def apply_filter(self, img):
         '''
-        Applies filter to image
+        Transforms the image in a 1D vector, applies 1D convolution with the specified weights 
+        and transforms the array to a 2D array again
         
         @param img: image to be filtered
         @return filtered image
@@ -185,7 +186,7 @@ class LimiarFilter2D(IMGFiltering):
         
     def apply_filter(self, img):
         '''
-        Applies filter to image
+        Applies convolution to the image with the specified weights and later a limiar filter
         
         @param img: image to be filtered
         @return filtered image
@@ -202,7 +203,7 @@ class LimiarFilter2D(IMGFiltering):
     
 
 class MedianFilter2D(IMGFiltering):
-    def __call__(self):
+    def __init__(self):
         '''
         Reads inputs
         '''
@@ -210,12 +211,23 @@ class MedianFilter2D(IMGFiltering):
 
     def apply_filter(self, img):
         '''
-        Applies filter to image
+        Replaces the value of a pixel by the mean value of it's neighborhood
         
         @param img: image to be filtered
         @return filtered image
         '''
-        pass
+        padding = int((self.size-1) / 2)
+        aux_img = np.zeros((img.shape[0] + 2 * padding, img.shape[1] + 2 * padding))
+        aux_img[padding:-padding, padding:-padding] = img
+        new_img = np.zeros((img.shape))
+        middle = int((self.size * self.size - 1)/2)
+        
+        for i in range(padding, img.shape[0] - padding):
+            for j in range(padding, img.shape[1] - padding):
+                neighborhood = aux_img[i-padding:i+padding+1, j-padding:j+padding+1]
+                new_img[i][j] = sorted(neighborhood.reshape(self.size * self.size))[middle]
+        
+        return new_img.astype(np.uint8)
 
 def run_filtering():
     img_name = str(input()).rstrip()
