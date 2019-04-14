@@ -11,7 +11,7 @@ Image filtering
 '''
 import imageio
 import numpy as np
-from math import sqrt, floor
+from math import sqrt
 
 
 class FilterFactory:
@@ -33,17 +33,16 @@ class FilterFactory:
 
 
 class IMGFiltering:
-    def normalize(self, img, B):
+    def normalize(self, img):
         '''
-        Normalizes image in values between 0 and 2^B - 1
+        Normalizes image in values between 0 and 255
         
         @param img: 2D numpy array to normalize
-        @param B: number of bits to define normalization maximum
         '''
         imax = np.max(img)
         imin = np.min(img)
         
-        return (img-imin)/(imax-imin) * (pow(2, B) - 1)  
+        return ((img-imin)/(imax-imin) * (pow(2, 8) - 1)).astype('uint8')  
     
     def calc_rmse(self, img1, img2):
         '''
@@ -54,34 +53,7 @@ class IMGFiltering:
         @return integer with RMSE value
         '''
         return round(sqrt(sum(sum(np.multiply((img1 - img2), (img1 - img2))))), 4)
-
-
-class LimiarFilter(IMGFiltering):
-    def __init__(self):
-        '''
-        Reads inputs
-        '''
-        self.threshold = int(input()) 
-        
-    def apply_filter(self, img):
-        '''
-        Applies filter to image
-        
-        @param img: image to be filtered
-        @return filtered image
-        '''        
-        optimum_t = self.find_optimum_threshold(img)
-        
-        new_img = np.copy(img)
-        for i in range(img.shape[0]):
-            for j in range(img.shape[1]):
-                if img[i][j] > optimum_t:
-                    new_img[i][j] = 1
-                else:
-                    new_img[i][j] = 0
-        
-        return new_img
-
+    
     def find_optimum_threshold(self, img):
         '''
         Updates the threshold until an optimum value is found
@@ -114,6 +86,42 @@ class LimiarFilter(IMGFiltering):
                 optimum_t = new_t
         return optimum_t
     
+    def limiar_filter(self, img):
+        '''
+        Applies limiar filter to image
+        
+        @param img: image to be filtered
+        @return filtered image
+        '''        
+        optimum_t = self.find_optimum_threshold(img)
+        
+        new_img = np.copy(img)
+        for i in range(img.shape[0]):
+            for j in range(img.shape[1]):
+                if img[i][j] > optimum_t:
+                    new_img[i][j] = 1
+                else:
+                    new_img[i][j] = 0
+        
+        return new_img.astype(np.uint8)
+
+
+class LimiarFilter(IMGFiltering):
+    def __init__(self):
+        '''
+        Reads inputs
+        '''
+        self.threshold = int(input()) 
+        
+    def apply_filter(self, img):
+        '''
+        Applies filter to image
+        
+        @param img: image to be filtered
+        @return filtered image
+        '''        
+        return self.limiar_filter(img)
+    
 
 class Filter1D(IMGFiltering):
     def __init__(self):
@@ -123,7 +131,7 @@ class Filter1D(IMGFiltering):
         self.size = int(input())
         self.weights = np.zeros((self.size,))
         
-        for i, value in enumerate(input().split(' ')):
+        for i, value in enumerate(input().strip().split(' ')):
             self.weights[i] = int(value)
             
     def apply_filter(self, img):
@@ -133,14 +141,15 @@ class Filter1D(IMGFiltering):
         @param img: image to be filtered
         @return filtered image
         '''
-        padding = floor(self.size / 2)
+        padding = int((self.size-1) / 2)
         img_1D = self.create_circular_array(img)
         result = np.zeros((img.shape[0] * img.shape[1],))
         
+        weights = np.flip(self.weights)
         for k in range(padding, img.shape[0] * img.shape[1] + 1):
-            result[k-1] = sum(np.multiply(self.weights, img_1D[k-1:k+self.size-1]))
+            result[k-1] = sum(np.multiply(weights, img_1D[k-1:k+self.size-1]))
             
-        return np.reshape(result, img.shape)
+        return np.reshape(result, img.shape).astype(np.uint8)
         
     def create_circular_array(self, img):
         '''
@@ -149,9 +158,9 @@ class Filter1D(IMGFiltering):
         @param img: image to transform to 1D
         @return 1D circular array with image
         ''' 
-        padding = floor(self.size / 2)
+        padding = int((self.size-1) / 2)
         aux = np.reshape(img, img.shape[0] * img.shape[1])
-        img_1D = np.zeros(img.shape[0] * img.shape[1] + 2 * padding, dtype=np.uint8)
+        img_1D = np.zeros(img.shape[0] * img.shape[1] + 2 * padding)
         
         img_1D[padding:-padding] = aux
         img_1D[0:padding] = aux[-padding:]
@@ -169,8 +178,8 @@ class LimiarFilter2D(IMGFiltering):
         self.weights = np.zeros((self.size, self.size))
         
         for i in range(self.size):
-            for j in range(self.size):
-                self.weights[i][j] = int(input())
+            for j, v in enumerate(input().strip().split(' ')):
+                self.weights[i][j] = int(v)
         
         self.threshold = int(input())
         
@@ -181,8 +190,16 @@ class LimiarFilter2D(IMGFiltering):
         @param img: image to be filtered
         @return filtered image
         '''
-        pass
-
+        new_img = np.copy(img)
+        padding = int((self.size-1) / 2)
+        weights = np.flip(np.flip(self.weights, 0), 1)
+        
+        for i in range(padding, img.shape[0] - padding):
+            for j in range(padding, img.shape[1] - padding):
+                new_img[i][j] = np.sum(np.multiply(weights, img[i-padding:i+padding+1, j-padding:j+padding+1]))
+        
+        return self.limiar_filter(new_img)
+    
 
 class MedianFilter2D(IMGFiltering):
     def __call__(self):
@@ -207,7 +224,7 @@ def run_filtering():
     img = imageio.imread(img_name)
     filt = FilterFactory.init_filter(method)
     filterd_img = filt.apply_filter(img)
-    rmse = filt.calc_rmse((filt.normalize(img, 8)).astype('uint8'), (filterd_img).astype('uint8'))
+    rmse = filt.calc_rmse(filt.normalize(img), filterd_img)
     
     return img, filterd_img, rmse
     

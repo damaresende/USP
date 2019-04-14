@@ -60,7 +60,7 @@ class IMGFilteringTests(unittest.TestCase):
         plt.subplot(121)
         plt.imshow(img, cmap="gray", vmin=0, vmax=255)
         plt.subplot(122)
-        plt.imshow(filterd_img, cmap="gray", vmin=0, vmax=1)
+        plt.imshow(filterd_img, cmap="gray", vmin=0, vmax=255)
         plt.show()
         
     def test_circular_array(self):
@@ -77,35 +77,52 @@ class IMGFilteringTests(unittest.TestCase):
         user_input = ['3', '5 3 2']
         
         example = np.array([[1, 2, 3], [4, 5, 6], [7, 8, 9]])
-        expected_result = np.array([[52, 17, 27], [37, 47, 57], [67, 77, 69]]) 
+        expected_result = np.array([[31, 23, 33], [43, 53, 63], [73, 83, 48]]) 
         with patch('builtins.input', side_effect=user_input):
             filt = imagefiltering.Filter1D()
             filtered_img = filt.apply_filter(example)
             self.assertTrue((expected_result == filtered_img).all())
         
-#     def test_2D_limiar_filter_3x3(self):
-#         '''
-#         Test 2D filtering with limiarization with 3x3 structuring element
-#         '''
-#         user_input = ['files/airplane.png', '3', '3', '-1 -1 -1', '-1 8 -1', '-1 -1 -1', '200']
-#         expected_output = 135.5598
-#         
-#         with patch('builtins.input', side_effect=user_input):
-#             result = imagefiltering.run_filtering()
-#             self.assertEqual(expected_output, result)
-#             
-#     def test_2D_limiar_filter_5x5(self):
-#         '''
-#         Test 2D filtering with limiarization with 5x5 structuring element
-#         '''
-#         user_input = ['files/flower.png', '3', '5', '-1 -1 -1 -1 -1', '-1 -1 -1 -1 -1', 
-#                       '-1 -1 24 -1 -1 ', '-1 -1 -1 -1 -1', '-1 -1 -1 -1 -1', '119']
-#         expected_output = 117.1761
-#         
-#         with patch('builtins.input', side_effect=user_input):
-#             result = imagefiltering.run_filtering()
-#             self.assertEqual(expected_output, result)
-#             
+    def test_2D_limiar_filter_3x3(self):
+        '''
+        Test 2D filtering with limiarization with 3x3 structuring element
+        '''
+        user_input = ['files/airplane.png', '3', '3', '-1 -1 -1', '-1 8 -1', '-1 -1 -1', '200']
+          
+        with patch('builtins.input', side_effect=user_input):
+            img, filterd_img, rmse = imagefiltering.run_filtering()
+            self.assertTrue(rmse < 1000)
+              
+        print('Test 2D Limiar Filter 3x3 RMSE: %s' % str(rmse))
+         
+        plt.figure()
+        plt.subplot(121)
+        plt.imshow(img, cmap="gray", vmin=0, vmax=255)
+        plt.subplot(122)
+        plt.imshow(filterd_img, cmap="gray", vmin=0, vmax=1)
+        plt.show()
+              
+    def test_2D_limiar_filter_5x5(self):
+        '''
+        Test 2D filtering with limiarization with 5x5 structuring element
+        '''
+        user_input = ['files/flower.png', '3', '5', '-1 -1 -1 -1 -1', '-1 -1 -1 -1 -1', 
+                      '-1 -1 24 -1 -1 ', '-1 -1 -1 -1 -1', '-1 -1 -1 -1 -1', '119']
+        expected_output = 117.1761
+         
+        with patch('builtins.input', side_effect=user_input):
+            img, filterd_img, rmse = imagefiltering.run_filtering()
+            self.assertTrue(rmse < 1000)
+              
+        print('Test 2D Limiar Filter 5x5 RMSE: %s' % str(rmse))
+         
+        plt.figure()
+        plt.subplot(121)
+        plt.imshow(img, cmap="gray", vmin=0, vmax=255)
+        plt.subplot(122)
+        plt.imshow(filterd_img, cmap="gray", vmin=0, vmax=1)
+        plt.show()
+             
 #     def test_median_filter(self):
 #         '''
 #         Test median filter
