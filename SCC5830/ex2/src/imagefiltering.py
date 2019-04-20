@@ -42,7 +42,13 @@ class IMGFiltering:
         imax = np.max(img)
         imin = np.min(img)
         
-        return ((img-imin)/(imax-imin) * (pow(2, 8) - 1)).astype('uint8')  
+        # if both images are of type uint8, any operation on them will be truncated to
+        # uint8. However, to calculate the RMSE I cannot truncate the values. So, at least
+        # one of the images must accept negative values (to compute the difference), and
+        # large integers (to compute the multiplication). Hence, I am converting it to int32
+        # instead of uint8
+        
+        return ((img-imin)/(imax-imin) * (pow(2, 8) - 1)).astype(np.int32)
     
     def calc_rmse(self, img1, img2):
         '''
@@ -52,8 +58,9 @@ class IMGFiltering:
         @param img2: 2D numpy array
         @return integer with RMSE value
         '''
-        return round(sqrt(sum(sum(np.multiply((img1 - img2), (img1 - img2))))), 4)
-    
+        mse = np.sum(np.multiply(img1 - img2, img1 - img2)) / (img1.shape[0] * img1.shape[1])
+        return round(sqrt(mse), 4)
+
     def find_optimum_threshold(self, img):
         '''
         Updates the threshold until an optimum value is found
@@ -103,7 +110,7 @@ class IMGFiltering:
                 else:
                     new_img[i][j] = 0
         
-        return new_img.astype(np.uint8)
+        return new_img
 
 
 class LimiarFilter(IMGFiltering):
@@ -150,7 +157,7 @@ class Filter1D(IMGFiltering):
         for k in range(padding, img.shape[0] * img.shape[1] + 1):
             result[k-1] = sum(np.multiply(weights, img_1D[k-1:k+self.size-1]))
             
-        return np.reshape(result, img.shape).astype(np.uint8)
+        return np.reshape(result, img.shape)
         
     def create_circular_array(self, img):
         '''
@@ -184,12 +191,9 @@ class LimiarFilter2D(IMGFiltering):
         
         self.threshold = int(input())
         
-    def apply_filter(self, img):
+    def simple_filter(self, img):
         '''
-        Applies convolution to the image with the specified weights and later a limiar filter
-        
-        @param img: image to be filtered
-        @return filtered image
+        Applies convolution to the image with the specified weights
         '''
         new_img = np.copy(img)
         padding = int((self.size-1) / 2)
@@ -198,8 +202,17 @@ class LimiarFilter2D(IMGFiltering):
         for i in range(padding, img.shape[0] - padding):
             for j in range(padding, img.shape[1] - padding):
                 new_img[i][j] = np.sum(np.multiply(weights, img[i-padding:i+padding+1, j-padding:j+padding+1]))
+                
+        return new_img
         
-        return self.limiar_filter(new_img)
+    def apply_filter(self, img):
+        '''
+        Applies convolution to the image with the specified weights and later a limiar filter
+        
+        @param img: image to be filtered
+        @return filtered image
+        '''
+        return self.limiar_filter(self.simple_filter(img))
     
 
 class MedianFilter2D(IMGFiltering):
@@ -217,27 +230,39 @@ class MedianFilter2D(IMGFiltering):
         @return filtered image
         '''
         padding = int((self.size-1) / 2)
+        
         aux_img = np.zeros((img.shape[0] + 2 * padding, img.shape[1] + 2 * padding))
         aux_img[padding:-padding, padding:-padding] = img
         new_img = np.zeros((img.shape))
         middle = int((self.size * self.size - 1)/2)
         
-        for i in range(padding, img.shape[0] - padding):
-            for j in range(padding, img.shape[1] - padding):
+        for i in range(padding, img.shape[0] + 1):
+            for j in range(padding, img.shape[1] + 1):
                 neighborhood = aux_img[i-padding:i+padding+1, j-padding:j+padding+1]
-                new_img[i][j] = sorted(neighborhood.reshape(self.size * self.size))[middle]
+                new_img[i-padding][j-padding] = sorted(neighborhood.reshape(self.size * self.size))[middle]
         
-        return new_img.astype(np.uint8)
+        return new_img
+
 
 def run_filtering():
+    '''
+    Applies filter according to specified parameters 
+    '''
     img_name = str(input()).rstrip()
     method = int(input())
      
-    img = imageio.imread(img_name)
+    img = imageio.imread(img_name) # img is of type uint8
     filt = FilterFactory.init_filter(method)
-    filterd_img = filt.apply_filter(img)
-    rmse = filt.calc_rmse(filt.normalize(img), filterd_img)
+    filtered_img = filt.apply_filter(img)
+    rmse = filt.calc_rmse(img, filt.normalize(filtered_img)) # result of normalization is of type int32
     
-    return img, filterd_img, rmse
+    return img, filtered_img, rmse
+
+def main():
+    _, _, rmse = run_filtering()
+    print(rmse)
     
+if __name__ == '__main__':
+    main()    
+
 
