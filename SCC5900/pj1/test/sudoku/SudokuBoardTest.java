@@ -134,9 +134,10 @@ public class SudokuBoardTest {
 	@Test
 	public void testBacktrackingFullFill() {
 		SudokuBoard board = new SudokuBoard();
-		board.fillData(boardFile);
 		
+		board.fillData(boardFile);
 		board.backtracking(board.toComplete.poll());
+		
 		assertTrue(board.toCompleteIsEmpty());
 	}
 	
@@ -146,17 +147,10 @@ public class SudokuBoardTest {
 		board.fillData(boardFile);
 		board.backtracking(board.toComplete.poll());
 
-		int error = 0;
 		for(int i = 0; i < board.boardSize; i++) {
 			for (int j = 0; j < board.boardSize; j++) {
-//				assertEquals(answer.board[i][j], board.board[i][j]);
-				if (answer.board[i][j] != board.board[i][j]) {
-					System.out.println("Error in cell " + i + ", " + j + ". " + answer.board[i][j] + " != " + board.board[i][j]);
-					error++;
-				}
+				assertEquals(answer.board[i][j], board.board[i][j]);
 			}
 		}
-		
-		System.out.println("Errors: " + error);
 	}
 }

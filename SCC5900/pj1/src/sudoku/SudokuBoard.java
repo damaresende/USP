@@ -75,16 +75,24 @@ public class SudokuBoard {
 	}
 	
 	public boolean backtracking(Coordinates cell) {
-		if (toComplete.poll() == null)
+		if (toComplete.size() == 0) {
+			for(int i = 1; i <= boardSize; i++) {
+				if (evaluate(cell, i)) {
+					board[cell.getI()][cell.getJ()] = i;
+				}
+			}
 			return true;
+		}
 		
 		for(int i = 1; i <= boardSize; i++) {
 			if (evaluate(cell, i)) {
 				board[cell.getI()][cell.getJ()] = i;
 				
-				System.out.println("Cell " + cell.getI() + ", " + cell.getJ() + ". Value " + i);
-				if (backtracking(toComplete.poll()))
+				if (backtracking(toComplete.poll())) {
 					return true;
+				} else {
+					board[cell.getI()][cell.getJ()] = -1;
+				}
 					
 			}
 		}
@@ -114,7 +122,7 @@ public class SudokuBoard {
 	}
 	
 	public boolean toCompleteIsEmpty() {
-		if (toComplete.poll() == null)
+		if (toComplete.size() == 0)
 			return true;
 		return false;
 	}
