@@ -87,7 +87,7 @@ class IMGFiltering:
                         g2_count += 1
                         
             new_t = (g1_sum/g1_count + g2_sum/g2_count) / 2.0
-            if new_t - optimum_t < 0.5:
+            if new_t - optimum_t <= 0.5:
                 return new_t
             else:
                 optimum_t = new_t
@@ -195,6 +195,7 @@ class LimiarFilter2D(IMGFiltering):
         '''
         Applies convolution to the image with the specified weights
         '''
+        img = img.astype(np.int32)
         new_img = np.copy(img)
         padding = int((self.size-1) / 2)
         weights = np.flip(np.flip(self.weights, 0), 1)

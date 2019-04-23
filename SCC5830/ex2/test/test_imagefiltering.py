@@ -23,27 +23,27 @@ class IMGFilteringTests(unittest.TestCase):
     def setUpClass(cls):
         super(IMGFilteringTests, cls).setUpClass()
          
-#     def test_1D_limiar_filter(self):
-#         '''
-#         Test limiarization
-#         '''
-#         user_input = ['files/baboon.png', '1', '200']
-#         expected_output = 93.3495
-#            
-#         with patch('builtins.input', side_effect=user_input):
-#             img, filterd_img, rmse = imagefiltering.run_filtering()
-#             self.assertTrue(np.amax(filterd_img) == 1)
-#             self.assertTrue(np.amin(filterd_img) == 0)
-#             self.assertEqual(expected_output, rmse)
-#                
-#         print('Test 1D Limiar RMSE: %s' % str(rmse))
-#            
-#         plt.figure()
-#         plt.subplot(121)
-#         plt.imshow(img, cmap="gray", vmin=0, vmax=255)
-#         plt.subplot(122)
-#         plt.imshow(filterd_img, cmap="gray", vmin=0, vmax=1)
-#         plt.show()
+    def test_1D_limiar_filter(self):
+        '''
+        Test limiarization
+        '''
+        user_input = ['files/baboon.png', '1', '200']
+        expected_output = 93.3495
+            
+        with patch('builtins.input', side_effect=user_input):
+            img, filterd_img, rmse = imagefiltering.run_filtering()
+            print('Test 1D Limiar RMSE: %s' % str(rmse))
+            
+            self.assertTrue(np.amax(filterd_img) == 1)
+            self.assertTrue(np.amin(filterd_img) == 0)
+            self.assertTrue(expected_output - 20 < rmse < expected_output + 20)
+            
+        plt.figure()
+        plt.subplot(121)
+        plt.imshow(img, cmap="gray", vmin=0, vmax=255)
+        plt.subplot(122)
+        plt.imshow(filterd_img, cmap="gray", vmin=0, vmax=1)
+        plt.show()
               
     def test_1D_filter(self):
         '''
@@ -54,9 +54,9 @@ class IMGFilteringTests(unittest.TestCase):
             
         with patch('builtins.input', side_effect=user_input):
             img, filterd_img, rmse = imagefiltering.run_filtering()
+            print('Test 1D Filter RMSE: %s' % str(rmse))
+            
             self.assertTrue(expected_output - 10 < rmse < expected_output + 10)
-                  
-        print('Test 1D Filter RMSE: %s' % str(rmse))
             
         plt.figure()
         plt.subplot(121)
@@ -85,46 +85,45 @@ class IMGFilteringTests(unittest.TestCase):
             filtered_img = filt.apply_filter(example)
             self.assertTrue((expected_result == filtered_img).all())
           
-#     def test_2D_limiar_filter_3x3(self):
-#         '''
-#         Test 2D filtering with limiarization with 3x3 structuring element
-#         '''
-#         user_input = ['files/airplane.png', '3', '3', '-1 -1 -1', '-1 8 -1', '-1 -1 -1', '200']
-#         expected_output = 135.5598
-#             
-#         with patch('builtins.input', side_effect=user_input):
-#             img, filterd_img, rmse = imagefiltering.run_filtering()
-#             self.assertTrue(expected_output - 10 < rmse < expected_output + 10)
-#                 
-#         print('Test 2D Limiar Filter 3x3 RMSE: %s' % str(rmse))
+    def test_2D_limiar_filter_3x3(self):
+        '''
+        Test 2D filtering with limiarization with 3x3 structuring element
+        '''
+        user_input = ['files/airplane.png', '3', '3', '-1 -1 -1', '-1 8 -1', '-1 -1 -1', '200']
+        expected_output = 135.5598
+             
+        with patch('builtins.input', side_effect=user_input):
+            img, filterd_img, rmse = imagefiltering.run_filtering()
+            self.assertTrue(expected_output - 10 < rmse < expected_output + 10)
+                 
+        print('Test 2D Limiar Filter 3x3 RMSE: %s' % str(rmse))
            
-#         plt.figure()
-#         plt.subplot(121)
-#         plt.imshow(img, cmap="gray", vmin=0, vmax=255)
-#         plt.subplot(122)
-#         plt.imshow(filterd_img, cmap="gray", vmin=0, vmax=1)
-#         plt.show()
+        plt.figure()
+        plt.subplot(121)
+        plt.imshow(img, cmap="gray", vmin=0, vmax=255)
+        plt.subplot(122)
+        plt.imshow(filterd_img, cmap="gray", vmin=0, vmax=1)
+        plt.show()
                 
-#     def test_2D_limiar_filter_5x5(self):
-#         '''
-#         Test 2D filtering with limiarization with 5x5 structuring element
-#         '''
-#         user_input = ['files/flower.png', '3', '5', '-1 -1 -1 -1 -1', '-1 -1 -1 -1 -1', 
-#                       '-1 -1 24 -1 -1 ', '-1 -1 -1 -1 -1', '-1 -1 -1 -1 -1', '119']
-#         expected_output = 117.1761
-#             
-#         with patch('builtins.input', side_effect=user_input):
-#             img, filterd_img, rmse = imagefiltering.run_filtering()
-#             self.assertTrue(expected_output - 10 < rmse < expected_output + 10)
-#                  
-#         print('Test 2D Limiar Filter 5x5 RMSE: %s' % str(rmse))
-#             
-#         plt.figure()
-#         plt.subplot(121)
-#         plt.imshow(img, cmap="gray", vmin=0, vmax=255)
-#         plt.subplot(122)
-#         plt.imshow(filterd_img, cmap="gray", vmin=0, vmax=1)
-#         plt.show()
+    def test_2D_limiar_filter_5x5(self):
+        '''
+        Test 2D filtering with limiarization with 5x5 structuring element
+        '''
+        user_input = ['files/flower.png', '3', '5', '-1 -1 -1 -1 -1', '-1 -1 -1 -1 -1', 
+                      '-1 -1 24 -1 -1 ', '-1 -1 -1 -1 -1', '-1 -1 -1 -1 -1', '119']
+        expected_output = 117.1761
+             
+        with patch('builtins.input', side_effect=user_input):
+            img, filterd_img, rmse = imagefiltering.run_filtering()
+            print('Test 2D Limiar Filter 5x5 RMSE: %s' % str(rmse))
+            self.assertTrue(expected_output - 10 < rmse < expected_output + 10)
+        
+        plt.figure()
+        plt.subplot(121)
+        plt.imshow(img, cmap="gray", vmin=0, vmax=255)
+        plt.subplot(122)
+        plt.imshow(filterd_img, cmap="gray", vmin=0, vmax=1)
+        plt.show()
               
     def test_median_filter(self):
         '''
@@ -135,9 +134,9 @@ class IMGFilteringTests(unittest.TestCase):
            
         with patch('builtins.input', side_effect=user_input):
             img, filterd_img, rmse = imagefiltering.run_filtering()
+            print('Test Median Filter RMSE: %s' % str(rmse))
             self.assertTrue(expected_output - 10 < rmse < expected_output + 10)
                 
-        print('Test Median Filter RMSE: %s' % str(rmse))
 
         plt.figure()
         plt.subplot(121)
