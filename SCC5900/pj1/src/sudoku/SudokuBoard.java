@@ -78,10 +78,14 @@ public class SudokuBoard {
 		if (toComplete.poll() == null)
 			return true;
 		
-		for(int i = 0; i < boardSize; i++) {
+		for(int i = 1; i <= boardSize; i++) {
 			if (evaluate(cell, i)) {
 				board[cell.getI()][cell.getJ()] = i;
-				return backtracking(toComplete.poll());
+				
+				System.out.println("Cell " + cell.getI() + ", " + cell.getJ() + ". Value " + i);
+				if (backtracking(toComplete.poll()))
+					return true;
+					
 			}
 		}
 		toComplete.add(cell);
@@ -106,8 +110,13 @@ public class SudokuBoard {
 			}
 		}
 		
-	
 		return true;
+	}
+	
+	public boolean toCompleteIsEmpty() {
+		if (toComplete.poll() == null)
+			return true;
+		return false;
 	}
 	
 }

@@ -2,10 +2,7 @@ package sudoku;
 
 public class Coordinates {
 	private int i = -1, j = -1, pi = -1, pj = -1;
-	private int boardDim = 3;
-	private float boardSize = boardDim * boardDim;
-	private int[][] pivots = {{0, 0}, {0, 3}, {0, 6}, {3, 0}, {3, 3}, {3, 6}, {6, 0}, {6, 3}, {6, 6}};
-	
+
 	public Coordinates(int i, int j) {
 		this.i = i;
 		this.j = j;
@@ -13,6 +10,10 @@ public class Coordinates {
 	}
 	
 	private void setPivots() {
+		int boardDim = 3;
+		float boardSize = boardDim * boardDim;
+		int[][] pivots = {{0, 0}, {0, 3}, {0, 6}, {3, 0}, {3, 3}, {3, 6}, {6, 0}, {6, 3}, {6, 6}};
+		
 		int i = boardDim - Math.round(boardSize/(this.i+1));
 		if (i < 0) i = 0;
 		

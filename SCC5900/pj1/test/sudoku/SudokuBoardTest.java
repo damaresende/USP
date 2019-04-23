@@ -22,30 +22,36 @@ import org.junit.Test;
 
 public class SudokuBoardTest {
 
-	public static String boardFile;
-	public static SudokuBoard board;
+	public static SudokuBoard answer;
+	public static String boardFile; 
 	
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		boardFile = System.getProperty("user.dir") + File.separator + "test" + File.separator 
 				+ "boards" + File.separator + "board1.txt";
-		board = new SudokuBoard();
-		board.fillData(boardFile);
+		
+		String answerFile = System.getProperty("user.dir") + File.separator + "test" + File.separator 
+				+ "boards" + File.separator + "board1_answer.txt";
+		answer = new SudokuBoard();
+		answer.fillData(answerFile);
 	}
 	
 	@Test
 	public void testBoardInitialization() {
-		SudokuBoard iniBoard = new SudokuBoard();
+		SudokuBoard board = new SudokuBoard();
 		
-		for(int i = 0; i < iniBoard.boardSize; i++) {
-			for (int j = 0; j < iniBoard.boardSize; j++) {
-				assertEquals(iniBoard.board[i][j], 0);
+		for(int i = 0; i < board.boardSize; i++) {
+			for (int j = 0; j < board.boardSize; j++) {
+				assertEquals(board.board[i][j], 0);
 			}
 		}
 	}
 	
 	@Test
 	public void testParseBoardValues() {
+		SudokuBoard board = new SudokuBoard();
+		board.fillData(boardFile);
+		
 		assertEquals(6, board.board[0][1]);
 		assertEquals(8, board.board[1][2]);
 		assertEquals(2, board.board[2][0]);
@@ -59,12 +65,18 @@ public class SudokuBoardTest {
 
 	@Test
 	public void testEvaluateRowConstraint() {
+		SudokuBoard board = new SudokuBoard();
+		board.fillData(boardFile);
+		
 		assertFalse(board.evaluate(new Coordinates(0, 0), 6));
 		assertTrue(board.evaluate(new Coordinates(0, 2), 3));
 	}
 	
 	@Test
 	public void testEvaluateColumnConstraint() {
+		SudokuBoard board = new SudokuBoard();
+		board.fillData(boardFile);
+		
 		assertFalse(board.evaluate(new Coordinates(7, 0), 2));
 		assertTrue(board.evaluate(new Coordinates(4, 0), 4));
 	}
@@ -110,9 +122,41 @@ public class SudokuBoardTest {
 	
 	@Test
 	public void testEvaluateSquareConstraint() {
+		SudokuBoard board = new SudokuBoard();
+		board.fillData(boardFile);
+		
 		assertFalse(board.evaluate(new Coordinates(4, 4), 7));
 		assertFalse(board.evaluate(new Coordinates(2, 7), 6));
 		assertFalse(board.evaluate(new Coordinates(5, 1), 8));
 		assertTrue(board.evaluate(new Coordinates(4, 7), 1));
+	}
+	
+	@Test
+	public void testBacktrackingFullFill() {
+		SudokuBoard board = new SudokuBoard();
+		board.fillData(boardFile);
+		
+		board.backtracking(board.toComplete.poll());
+		assertTrue(board.toCompleteIsEmpty());
+	}
+	
+	@Test
+	public void testBacktrackingCorrectFill() {
+		SudokuBoard board = new SudokuBoard();
+		board.fillData(boardFile);
+		board.backtracking(board.toComplete.poll());
+
+		int error = 0;
+		for(int i = 0; i < board.boardSize; i++) {
+			for (int j = 0; j < board.boardSize; j++) {
+//				assertEquals(answer.board[i][j], board.board[i][j]);
+				if (answer.board[i][j] != board.board[i][j]) {
+					System.out.println("Error in cell " + i + ", " + j + ". " + answer.board[i][j] + " != " + board.board[i][j]);
+					error++;
+				}
+			}
+		}
+		
+		System.out.println("Errors: " + error);
 	}
 }
