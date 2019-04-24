@@ -25,31 +25,13 @@ public class SudokuBoardBTFC extends SudokuBoardBT {
 	}
 	
 	private void removeFromDomain(int ii, int jj, int value) {
-//		for (int k = 0; k < boardSize; k++)
-//			if (k != value)
-//				domain[i * boardDim + j][k] = false;
-		
 		for (int k = 0; k < boardSize; k++)
 			if (board[ii][k] != value)
 				domain[ii * boardSize + k][value-1] = false;
 		
-//		for(int i = 0; i < boardSize * boardSize; i++) {
-//			if (i < 10)
-//				System.out.print(" " + i + ": ");
-//			else
-//				System.out.print(i + ": ");
-//			
-//			for (int j = 0; j < boardSize; j++) {
-//				if (domain[i][j])
-//					System.out.print("TR ");
-//				else
-//					System.out.print("FL ");
-//			}
-//			System.out.println();
-//		}
-		
-//		for (int k = 0; k < boardSize; k++)
-//			domain[i * boardDim + k][value-1] = false;
+		for (int k = 0; k < boardSize; k++)
+			if (board[k][jj] != value)
+				domain[k * boardSize + jj][value-1] = false;
 	}
 	
 	@Override

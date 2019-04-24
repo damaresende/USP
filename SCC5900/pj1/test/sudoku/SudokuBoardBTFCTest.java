@@ -94,12 +94,14 @@ public class SudokuBoardBTFCTest {
 		SudokuBoardBTFC board = new SudokuBoardBTFC();
 		board.fillData(boardFile);
 		
+		int c = 0;
 		for(int i = 0; i < board.getBoardSize() * board.getBoardSize(); i++) {
 			for (int j = 0; j < board.getBoardSize(); j++) {
 				try {
 					assertEquals(domain[i][j], board.domain[i][j]);
 				} catch (AssertionError e) {
-					System.out.println("Error: [" + i + "," + j + "]. " + domain[i][j] + " != " + board.domain[i][j]);
+					c++;
+					System.out.println(c + ": Error: [" + (i+1) + "," + (j+1) + "]. " + domain[i][j] + " != " + board.domain[i][j]);
 				}
 			}
 		}
