@@ -19,18 +19,19 @@ import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
 
-public class SudokuBoard {
+public class SudokuBoardBT {
 	
-	private int[][] board;
-	private int boardDim = 3;
-	private int boardSize = boardDim * boardDim;
-	private Queue<Coordinates> toComplete = new LinkedList<Coordinates>();
+	protected int[][] board;
+	protected int boardDim = 3;
+	protected int boardSize = boardDim * boardDim;
+	protected Queue<Coordinates> toComplete;
 	
 	/**
      * Creates a 9x9 matrix
      */
-	public SudokuBoard() {
+	public SudokuBoardBT() {
 		board = new int[boardSize][boardSize];
+		toComplete = new LinkedList<Coordinates>();
 	}
 	
 	/**
@@ -91,18 +92,14 @@ public class SudokuBoard {
      * @return true if there are no values to be filled, false otherwise
      */
 	public boolean backtracking(Coordinates cell) {
-		if (toComplete.size() == 0) {
-			for(int i = 1; i <= boardSize; i++) {
-				if (evaluate(cell, i)) {
-					board[cell.getI()][cell.getJ()] = i;
-				}
-			}
-			return true;
-		}
 		
 		for(int i = 1; i <= boardSize; i++) {
 			if (evaluate(cell, i)) {
 				board[cell.getI()][cell.getJ()] = i;
+				
+				if (toComplete.size() == 0) {
+					return true;
+				}
 				
 				if (backtracking(toComplete.poll())) {
 					return true;
@@ -112,6 +109,7 @@ public class SudokuBoard {
 					
 			}
 		}
+		
 		toComplete.add(cell);
 		return false;
 	}
