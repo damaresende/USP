@@ -26,10 +26,20 @@ public class SudokuBoard {
 	private int boardSize = boardDim * boardDim;
 	private Queue<Coordinates> toComplete = new LinkedList<Coordinates>();
 	
+	/**
+     * Creates a 9x9 matrix
+     */
 	public SudokuBoard() {
 		board = new int[boardSize][boardSize];
 	}
 	
+	/**
+     * Reads data from the specified file and fills each cell of the Sudoku board
+     * with the values indicated. Only 9x9 boards are accepted.
+     * 
+     * @param boardFile: string with board file path and name
+     * @return true if board was successfully filled, false otherwise
+     */
 	public boolean fillData(String boardFile) {
 		try {
 			BufferedReader reader = new BufferedReader(new FileReader(boardFile));
@@ -74,6 +84,12 @@ public class SudokuBoard {
 		return true;
 	}
 	
+	/**
+     * Fills the board empty values with a valid value
+     * 
+     * @param cell: first cell to fill
+     * @return true if there are no values to be filled, false otherwise
+     */
 	public boolean backtracking(Coordinates cell) {
 		if (toComplete.size() == 0) {
 			for(int i = 1; i <= boardSize; i++) {
@@ -100,6 +116,14 @@ public class SudokuBoard {
 		return false;
 	}
 	
+	/**
+     * Checks if the specified cell can hold the specified value according to the
+     * rules of Sudoku game.
+     * 
+     * @param cell: cell to fill
+     * @param value: value to place in cell
+     * @return true if value is valid, false otherwise
+     */
 	public boolean evaluate(Coordinates cell, int value) {
 		for (int j = 0; j < boardSize; j++) {
 			if (board[cell.getI()][j] == value)
@@ -121,20 +145,43 @@ public class SudokuBoard {
 		return true;
 	}
 	
+	/**
+     * Checks if the list of cells to be completed is empty.
+     * 
+     * @return true if list is empty, false otherwise
+     */
 	public boolean toCompleteIsEmpty() {
 		if (toComplete.size() == 0)
 			return true;
 		return false;
 	}
 	
+	/**
+     * Gets cell value based on the specified coordinates
+     * 
+     * @param i: row coordinate
+     * @param j: column coordinate
+     * @return cell value
+     */
 	public int getCellValue(int i, int j) {
 		return board[i][j];
 	}
 
+	/**
+     * Retrieves board size. It is always 9.
+     * 
+     * @return board size
+     */
 	public int getBoardSize() {
 		return boardSize;
 	}
 
+	/**
+     * Pulls from the queue of cells to be completed the next cell
+     * that need to be filled up.
+     * 
+     * @return cell that needs to be filled up
+     */
 	public Coordinates getNextCellToFill() {
 		return toComplete.poll();
 	}

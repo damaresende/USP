@@ -1,5 +1,5 @@
 /*
- * Unit tests for creating a Sudoku board
+ * Unit tests for creating and filling up a Sudoku board
  * 
  * @author: Damares Resende
  * @contact: damaresresende@usp.br
@@ -25,6 +25,9 @@ public class SudokuBoardTest {
 	public static SudokuBoard answer;
 	public static String boardFile; 
 	
+	/**
+     * Setting up answer board and board file name
+     */
 	@BeforeClass
 	public static void setUpBeforeClass() throws Exception {
 		boardFile = System.getProperty("user.dir") + File.separator + "test" + File.separator 
@@ -36,6 +39,9 @@ public class SudokuBoardTest {
 		answer.fillData(answerFile);
 	}
 	
+	/**
+     * Tests if board values are set to zero when it is first initialized
+     */
 	@Test
 	public void testBoardInitialization() {
 		SudokuBoard board = new SudokuBoard();
@@ -47,6 +53,9 @@ public class SudokuBoardTest {
 		}
 	}
 	
+	/**
+     * Tests if values are correctly read from board1.txt file
+     */
 	@Test
 	public void testParseBoardValues() {
 		SudokuBoard board = new SudokuBoard();
@@ -63,6 +72,9 @@ public class SudokuBoardTest {
 		assertEquals(7, board.getCellValue(8, 7));
 	}
 
+	/**
+     * Tests if the evaluation of row constraint is ok
+     */
 	@Test
 	public void testEvaluateRowConstraint() {
 		SudokuBoard board = new SudokuBoard();
@@ -72,6 +84,9 @@ public class SudokuBoardTest {
 		assertTrue(board.evaluate(new Coordinates(0, 2), 3));
 	}
 	
+	/**
+     * Tests if the evaluation of column constraint is ok
+     */
 	@Test
 	public void testEvaluateColumnConstraint() {
 		SudokuBoard board = new SudokuBoard();
@@ -81,6 +96,9 @@ public class SudokuBoardTest {
 		assertTrue(board.evaluate(new Coordinates(4, 0), 4));
 	}
 	
+	/**
+     * Tests if pivot values are correctly retrieved
+     */
 	@Test
 	public void testSetKernel() {
 		Coordinates cell = new Coordinates(7, 0);
@@ -120,6 +138,9 @@ public class SudokuBoardTest {
 		assertEquals(3, cell.getPivotJ());
 	}
 	
+	/**
+     * Tests if the evaluation of cell neighborhood square constraint is ok
+     */
 	@Test
 	public void testEvaluateSquareConstraint() {
 		SudokuBoard board = new SudokuBoard();
@@ -131,6 +152,9 @@ public class SudokuBoardTest {
 		assertTrue(board.evaluate(new Coordinates(4, 7), 1));
 	}
 	
+	/**
+     * Tests if all values to be filled are filled after backtracking
+     */
 	@Test
 	public void testBacktrackingFullFill() {
 		SudokuBoard board = new SudokuBoard();
@@ -141,6 +165,9 @@ public class SudokuBoardTest {
 		assertTrue(board.toCompleteIsEmpty());
 	}
 	
+	/**
+     * Tests if all values to be filled are correctly filled after backtracking
+     */
 	@Test
 	public void testBacktrackingCorrectFill() {
 		SudokuBoard board = new SudokuBoard();
