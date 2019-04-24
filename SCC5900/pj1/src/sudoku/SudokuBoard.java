@@ -21,10 +21,10 @@ import java.util.Queue;
 
 public class SudokuBoard {
 	
-	int[][] board;
-	int boardDim = 3;
-	int boardSize = boardDim * boardDim;
-	Queue<Coordinates> toComplete = new LinkedList<Coordinates>();
+	private int[][] board;
+	private int boardDim = 3;
+	private int boardSize = boardDim * boardDim;
+	private Queue<Coordinates> toComplete = new LinkedList<Coordinates>();
 	
 	public SudokuBoard() {
 		board = new int[boardSize][boardSize];
@@ -125,6 +125,18 @@ public class SudokuBoard {
 		if (toComplete.size() == 0)
 			return true;
 		return false;
+	}
+	
+	public int getCellValue(int i, int j) {
+		return board[i][j];
+	}
+
+	public int getBoardSize() {
+		return boardSize;
+	}
+
+	public Coordinates getNextCellToFill() {
+		return toComplete.poll();
 	}
 	
 }

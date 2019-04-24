@@ -40,9 +40,9 @@ public class SudokuBoardTest {
 	public void testBoardInitialization() {
 		SudokuBoard board = new SudokuBoard();
 		
-		for(int i = 0; i < board.boardSize; i++) {
-			for (int j = 0; j < board.boardSize; j++) {
-				assertEquals(board.board[i][j], 0);
+		for(int i = 0; i < board.getBoardSize(); i++) {
+			for (int j = 0; j < board.getBoardSize(); j++) {
+				assertEquals(board.getCellValue(i, j), 0);
 			}
 		}
 	}
@@ -52,15 +52,15 @@ public class SudokuBoardTest {
 		SudokuBoard board = new SudokuBoard();
 		board.fillData(boardFile);
 		
-		assertEquals(6, board.board[0][1]);
-		assertEquals(8, board.board[1][2]);
-		assertEquals(2, board.board[2][0]);
+		assertEquals(6, board.getCellValue(0, 1));
+		assertEquals(8, board.getCellValue(1, 2));
+		assertEquals(2, board.getCellValue(2, 0));
 		
-		assertEquals(-1, board.board[4][4]);
+		assertEquals(-1, board.getCellValue(4, 4));
 		
-		assertEquals(2, board.board[6][8]);
-		assertEquals(9, board.board[7][6]);
-		assertEquals(7, board.board[8][7]);
+		assertEquals(2, board.getCellValue(6, 8));
+		assertEquals(9, board.getCellValue(7, 6));
+		assertEquals(7, board.getCellValue(8, 7));
 	}
 
 	@Test
@@ -136,7 +136,7 @@ public class SudokuBoardTest {
 		SudokuBoard board = new SudokuBoard();
 		
 		board.fillData(boardFile);
-		board.backtracking(board.toComplete.poll());
+		board.backtracking(board.getNextCellToFill());
 		
 		assertTrue(board.toCompleteIsEmpty());
 	}
@@ -145,11 +145,11 @@ public class SudokuBoardTest {
 	public void testBacktrackingCorrectFill() {
 		SudokuBoard board = new SudokuBoard();
 		board.fillData(boardFile);
-		board.backtracking(board.toComplete.poll());
+		board.backtracking(board.getNextCellToFill());
 
-		for(int i = 0; i < board.boardSize; i++) {
-			for (int j = 0; j < board.boardSize; j++) {
-				assertEquals(answer.board[i][j], board.board[i][j]);
+		for(int i = 0; i < board.getBoardSize(); i++) {
+			for (int j = 0; j < board.getBoardSize(); j++) {
+				assertEquals(answer.getCellValue(i, j), board.getCellValue(i, j));
 			}
 		}
 	}
