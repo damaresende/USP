@@ -24,14 +24,22 @@ public class SudokuBoardBTFC extends SudokuBoardBT {
 		return cellDomain;
 	}
 	
-	private void removeFromDomain(int ii, int jj, int value) {
+	private void removeFromDomain(int i, int j, int value) {
 		for (int k = 0; k < boardSize; k++)
-			if (board[ii][k] != value)
-				domain[ii * boardSize + k][value-1] = false;
+			if (board[i][k] != value)
+				domain[i * boardSize + k][value-1] = false;
 		
 		for (int k = 0; k < boardSize; k++)
-			if (board[k][jj] != value)
-				domain[k * boardSize + jj][value-1] = false;
+			if (board[k][j] != value)
+				domain[k * boardSize + j][value-1] = false;
+		
+		Coordinates cell = new Coordinates(i, j);
+		for (int x = cell.getPivotI(); x < cell.getPivotI() + boardDim; x++) {
+			for (int y = cell.getPivotJ(); y < cell.getPivotJ() + boardDim; y++) {
+				if (board[x][y] != value)
+					domain[x * boardSize + y][value-1] = false;
+			}
+		}
 	}
 	
 	@Override
