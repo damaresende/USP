@@ -19,8 +19,6 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
-import java.util.Queue;
-import java.util.Random;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -139,6 +137,12 @@ public class SudokuBoardBTFCTest {
 			assertEquals(-1, board.getDomain(row).indexOf(4));
 		}
 		
+		assertEquals(0, board.backup[29]);
+		assertEquals(0, board.backup[38]);
+		assertEquals(0, board.backup[47]);
+		assertEquals(0, board.backup[54]);
+		assertEquals(0, board.backup[65]);
+		assertEquals(0, board.backup[74]);
 	}
 	
 	/**
@@ -173,5 +177,79 @@ public class SudokuBoardBTFCTest {
 			assertEquals(-1, board.getDomain(col).indexOf(4));
 		}
 		
+		assertEquals(0, board.backup[21]);
+		assertEquals(0, board.backup[22]);
+		assertEquals(0, board.backup[23]);
+		assertEquals(1, board.backup[24]);
+		assertEquals(1, board.backup[25]);
+		assertEquals(0, board.backup[26]);
+	}
+	
+	/**
+     * Tests if update domain is updating the domain of cells in the
+     * same square of the cell that was set
+     */
+	@Test
+	public void testUpdateDomainCleanSquare() {
+		SudokuBoardBTFC board = new SudokuBoardBTFC();
+		
+		board.fillData(boardFile);
+		board.initDomain();		
+		board.updateDomain(4, 3, 8);
+		
+		// row to set to one value
+		assertEquals(1, board.getDomain(4, 3).size());
+		assertTrue(8 == board.getDomain(4, 3).getFirst());
+		
+		// cells to keep
+		assertEquals(1, board.getDomain(30).size());
+		assertTrue(4 == board.getDomain(30).get(0));
+		
+		assertEquals(3, board.getDomain(31).size());
+		assertTrue(2 == board.getDomain(31).get(0));
+		assertTrue(3 == board.getDomain(31).get(1));
+		assertTrue(5 == board.getDomain(31).get(2));
+		
+		assertEquals(1, board.getDomain(32).size());
+		assertTrue(7 == board.getDomain(32).get(0));
+		
+		// cells to clean
+		int [] columnsToClean = new int[]{40, 41, 48, 49, 50};
+		for (int col : columnsToClean) {
+			assertEquals(-1, board.getDomain(col).indexOf(8));
+		}
+		
+		assertEquals(1, board.backup[40]);
+		assertEquals(0, board.backup[41]);
+		assertEquals(0, board.backup[48]);
+		assertEquals(1, board.backup[49]);
+		assertEquals(0, board.backup[50]);
+	}
+	
+
+	/**
+     * Tests if domain is correctly restored
+     */
+	@Test
+	public void testRestoreDomain() {
+		SudokuBoardBTFC board = new SudokuBoardBTFC();
+		
+		board.fillData(boardFile);
+		board.initDomain();
+		
+		board.updateDomain(5, 1, 3);
+		assertEquals(1, board.getDomain(5, 1).size());
+		assertTrue(3 == board.getDomain(5, 1).getFirst());
+		
+		board.restoreDomain(5, 1, 3);
+		assertEquals(3, board.getDomain(5, 1).size());
+		assertTrue(2 == board.getDomain(5, 1).get(0));
+		assertTrue(3 == board.getDomain(5, 1).get(1));
+		assertTrue(5 == board.getDomain(5, 1).get(2));
+		
+		int [] cellsToRestore = new int[]{47, 49, 55, 64};
+		for (int cell : cellsToRestore) {
+			assertTrue(board.getDomain(cell).indexOf(3) > -1);
+		}
 	}
 }
