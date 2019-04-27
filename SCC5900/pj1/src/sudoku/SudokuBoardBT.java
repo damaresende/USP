@@ -51,25 +51,22 @@ public class SudokuBoardBT {
 				String [] parts = line.trim().split(" ");
 				
 				if (parts.length != boardSize) {
-					System.out.println("ERROR: The number of board values per row should be "  
-							+ String.valueOf(boardSize) + ".");
+					System.out.println("ERROR: The number of board values per row should be " + boardSize + ".");
 					reader.close();
 					return false;
 				}
 				
 				for (int j = 0; j < boardSize; j++) {
-					if (parts[j].equals("-")) {
-						board[i][j] = -1;
-						toComplete.add(new Coordinates(i, j));
+					board[i][j] = Integer.parseInt(parts[j]);
+					
+					if (board[i][j] > boardSize || board[i][j] < 0) {
+						System.out.println("ERROR: Board values must be in between 0 and "  + boardSize + ".");
+						reader.close();
+						return false;
 					}
-					else {
-						board[i][j] = Integer.parseInt(parts[j]);
-						
-						if (board[i][j] < 0) {
-							System.out.println("ERROR: board values must be greater than 0.");
-							reader.close();
-							return false;
-						}
+					
+					if (board[i][j] == 0) {
+						toComplete.add(new Coordinates(i, j));
 					}
 				}
 				i++;

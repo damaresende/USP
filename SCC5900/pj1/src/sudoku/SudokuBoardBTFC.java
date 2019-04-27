@@ -1,95 +1,64 @@
 package sudoku;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
+import java.util.LinkedList;
 
 public class SudokuBoardBTFC extends SudokuBoardBT {
-	boolean [][] domain;
+	LinkedList<Integer> [] domain;
 	
 	public SudokuBoardBTFC() {
 		super();
-		domain = new boolean[boardSize * boardSize][boardSize];
-		
-		for (int i = 0; i < boardSize * boardSize; i++)
-			for (int j = 0; j < boardSize; j++)
-				domain[i][j] = true;
-	}
-	
-	public boolean[] getDomain(int i, int j) {
-		boolean [] cellDomain = new boolean[boardSize];
-		for(int k = 0; k < boardSize; k++) {
-			cellDomain[k] = domain[i * boardDim + j][k];
+		domain = (LinkedList<Integer>[]) new LinkedList<?>[boardSize * boardSize];
+		for(int i = 0; i < boardSize * boardSize; i++) {
+			domain[i] = new LinkedList<Integer>();
 		}
-		return cellDomain;
 	}
 	
-	private void removeFromDomain(int i, int j, int value) {
-		for (int k = 0; k < boardSize; k++)
-			if (k != value-1)
-				domain[i * boardSize + j][k] = false;
-		
-		for (int k = 0; k < boardSize; k++)
-			if (board[i][k] != value)
-				domain[i * boardSize + k][value-1] = false;
-		
-		for (int k = 0; k < boardSize; k++)
-			if (board[k][j] != value)
-				domain[k * boardSize + j][value-1] = false;
-		
-		Coordinates cell = new Coordinates(i, j);
-		for (int x = cell.getPivotI(); x < cell.getPivotI() + boardDim; x++) {
-			for (int y = cell.getPivotJ(); y < cell.getPivotJ() + boardDim; y++) {
-				if (board[x][y] != value)
-					domain[x * boardSize + y][value-1] = false;
+	public LinkedList<Integer> getDomain(int i, int j) {
+		return domain[i * boardDim + j];
+	}
+	
+	public LinkedList<Integer> getDomain(int k) {
+		return domain[k];
+	}
+	
+	protected void initDomain() {
+		for(int i = 0; i < boardSize; i++) {
+			for (int j = 0; j < boardSize; j++) {
+				if (board[i][j] != 0) {
+					domain[i * boardSize + j].add(board[i][j]);
+				} else {
+					for (int k = 1; k <= boardSize; k++) {
+						if (evaluate(new Coordinates(i, j), k))
+							domain[i * boardSize + j].add(k);
+					}
+				}
 			}
 		}
 	}
 	
-	@Override
-	public boolean fillData(String boardFile) {
-		try {
-			BufferedReader reader = new BufferedReader(new FileReader(boardFile));
-			String line = "";
-			int i = 0;
+	protected void updateDomain(int i, int j, int value) {
+		LinkedList<Integer> domain = getDomain(i, j);
+		domain.clear();
+		domain.add(value);
+		
+		for (int k = i + 1; k < boardSize; k++) {
+			domain = getDomain(k * boardSize + j);
+			int d = domain.indexOf(value);
 			
-			while ((line = reader.readLine()) != null) {
-				String [] parts = line.trim().split(" ");
-				
-				if (parts.length != boardSize) {
-					System.out.println("ERROR: The number of board values per row should be "  
-							+ String.valueOf(boardSize) + ".");
-					reader.close();
-					return false;
-				}
-				
-				for (int j = 0; j < boardSize; j++) {
-					if (parts[j].equals("-")) {
-						board[i][j] = -1;
-						toComplete.add(new Coordinates(i, j));
-					}
-					else {
-						board[i][j] = Integer.parseInt(parts[j]);
-						removeFromDomain(i, j, board[i][j]);
-						
-						if (board[i][j] < 0) {
-							System.out.println("ERROR: board values must be greater than 0.");
-							reader.close();
-							return false;
-						}
-					}
-				}
-				i++;
-			}
-			reader.close();
-		} catch (IOException e) {
-			System.out.println("ERROR: Board file could not be read");
-			return false;
-		} catch (NumberFormatException e) {
-			System.out.println("ERROR: Board value could not be parsed");
-			return false;
+			if (d > 0)
+				domain.remove(d);
 		}
-		return true;
+		
+		for (int k = j + 1; k < boardSize; k++) {
+			domain = getDomain(i * boardSize + k);
+			int d = domain.indexOf(value);
+			
+			if (d > -1)
+				domain.remove(d);
+		}
 	}
 	
+	protected void restoreDomain(int i, int j, int value) {
+		
+	}
 }

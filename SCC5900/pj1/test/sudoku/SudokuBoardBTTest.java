@@ -65,7 +65,7 @@ public class SudokuBoardBTTest {
 		assertEquals(8, board.getCellValue(1, 2));
 		assertEquals(2, board.getCellValue(2, 0));
 		
-		assertEquals(-1, board.getCellValue(4, 4));
+		assertEquals(0, board.getCellValue(4, 4));
 		
 		assertEquals(2, board.getCellValue(6, 8));
 		assertEquals(9, board.getCellValue(7, 6));
