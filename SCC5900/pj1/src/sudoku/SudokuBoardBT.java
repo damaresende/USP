@@ -18,6 +18,7 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
+import java.util.concurrent.TimeUnit;
 
 public class SudokuBoardBT {
 	
@@ -179,6 +180,24 @@ public class SudokuBoardBT {
      */
 	public Coordinates getNextCellToFill() {
 		return toComplete.poll();
+	}
+	
+	public void printBoard() {
+		for(int x = 0; x < 10; x++)
+			System.out.println();
+		
+		for(int i = 0; i < boardSize; i++) {
+			for (int j = 0; j < boardSize; j++) {
+				System.out.print(board[i][j] + " ");
+			}
+			System.out.println();
+		}
+		
+		try {
+			TimeUnit.SECONDS.sleep(1);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 	}
 	
 }

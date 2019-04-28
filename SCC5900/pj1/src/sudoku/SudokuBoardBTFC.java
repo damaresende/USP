@@ -69,7 +69,7 @@ public class SudokuBoardBTFC extends SudokuBoardBT {
 			
 			int d = dom.indexOf(value);
 			
-			if (d > 0) {
+			if (d > -1) {
 				dom.remove(d);
 				backup[k * boardSize + j] = 1;
 			}
@@ -115,7 +115,44 @@ public class SudokuBoardBTFC extends SudokuBoardBT {
 			if (backup[k] == 1) {
 				domain[k].add(value);
 			}
-		}
+		}	
+	}
+	
+	public boolean backtracking(Coordinates cell) {
+//		printBoard();
+		
+		LinkedList<Integer> dom = getDomain(cell.getI(), cell.getJ());
+		
+		while(dom.size() > 0) {
+			int value = dom.removeFirst();
+					
+			board[cell.getI()][cell.getJ()] = value;
+			updateDomain(cell.getI(), cell.getJ(), value);
 			
+			if (toComplete.size() == 0) {
+				return true;
+			}
+			
+			if (checkForward(cell.getI(), cell.getJ())) {
+				if (backtracking(toComplete.poll())) {
+					return true;
+				}
+			} else {
+				dom.add(value);
+				board[cell.getI()][cell.getJ()] = -1;
+				restoreDomain(cell.getI(), cell.getJ(), value);
+			}
+		}
+		
+		toComplete.add(cell);
+		return false;
+	}
+	
+	public boolean checkForward(int i, int j) {
+		for(int k = i * boardSize + j; k < boardSize * boardSize; k++) {
+			if (getDomain(k).size() == 0)
+				return false;
+		}
+		return true;
 	}
 }

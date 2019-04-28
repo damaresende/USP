@@ -252,4 +252,18 @@ public class SudokuBoardBTFCTest {
 			assertTrue(board.getDomain(cell).indexOf(3) > -1);
 		}
 	}
+	
+	/**
+     * Tests if all values to be filled are filled after backtracking
+     */
+	@Test
+	public void testBacktrackingFullFill() {
+		SudokuBoardBTFC board = new SudokuBoardBTFC();
+		
+		board.fillData(boardFile);
+		board.initDomain();
+		board.backtracking(board.getNextCellToFill());
+		
+		assertTrue(board.toCompleteIsEmpty());
+	}
 }
