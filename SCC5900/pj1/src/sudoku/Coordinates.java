@@ -14,6 +14,7 @@
 package sudoku;
 
 public class Coordinates {
+	private int dim; 
 	private int i = -1, j = -1, pi = -1, pj = -1;
 
 	/**
@@ -25,6 +26,20 @@ public class Coordinates {
 	public Coordinates(int i, int j) {
 		this.i = i;
 		this.j = j;
+		this.dim = 3;
+		setPivots();
+	}
+	
+	/**
+     * Sets coordinate values and pivot
+     * 
+     * @param i: row coordinate
+     * @param j: column coordinate
+     */
+	public Coordinates(int i, int j, int dim) {
+		this.i = i;
+		this.j = j;
+		this.dim = dim;
 		setPivots();
 	}
 	
@@ -32,19 +47,17 @@ public class Coordinates {
      * Sets pivot values based on the coordinates of the cell
      */
 	private void setPivots() {
-		int boardDim = 3;
-		float boardSize = boardDim * boardDim;
-		int[][] pivots = {{0, 0}, {0, 3}, {0, 6}, {3, 0}, {3, 3}, {3, 6}, {6, 0}, {6, 3}, {6, 6}};
+		float boardSize = dim * dim;
 		
-		int i = boardDim - Math.round(boardSize/(this.i+1));
+		int i = dim - Math.round(boardSize/(this.i+1));
 		if (i < 0) i = 0;
 		
-		int j = boardDim - Math.round(boardSize/(this.j+1));
+		int j = dim - Math.round(boardSize/(this.j+1));
 		if (j < 0) j = 0;
 		
-		int group = i * boardDim + j;
-		this.pi = pivots[group][0];
-		this.pj = pivots[group][1];
+		int group = i * dim + j;
+		this.pi = (int) Math.floor(group / dim) * dim;
+		this.pj = group % dim * dim;
 	}
 	
 	/**

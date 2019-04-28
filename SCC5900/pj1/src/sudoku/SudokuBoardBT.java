@@ -1,6 +1,6 @@
 /*
- * Creates a Sudoku board based on a matrix in a text file.
- * Only 9 x 9 boards are accepted.
+ * Creates a Sudoku board based on a matrix in a text file and uses
+ * backtracking to solve it.
  * 
  * @author: Damares Resende
  * @contact: damaresresende@usp.br
@@ -18,26 +18,31 @@ import java.io.FileReader;
 import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
-import java.util.concurrent.TimeUnit;
+
 
 public class SudokuBoardBT {
 	
 	protected int[][] board;
-	protected int boardDim = 3;
-	protected int boardSize = boardDim * boardDim;
+	protected int boardDim;
+	protected int boardSize;
 	protected Queue<Coordinates> toComplete;
 	
 	/**
-     * Creates a 9x9 matrix
+     * Creates a dimxdim matrix
+     * 
+     * @param dim: dimension of the Sudoku board
      */
-	public SudokuBoardBT() {
+	public SudokuBoardBT(int dim) {
+		this.boardDim = dim;
+		this.boardSize = boardDim * boardDim;
+		
 		board = new int[boardSize][boardSize];
 		toComplete = new LinkedList<Coordinates>();
 	}
 	
 	/**
      * Reads data from the specified file and fills each cell of the Sudoku board
-     * with the values indicated. Only 9x9 boards are accepted.
+     * with the values indicated.
      * 
      * @param boardFile: string with board file path and name
      * @return true if board was successfully filled, false otherwise
@@ -181,23 +186,4 @@ public class SudokuBoardBT {
 	public Coordinates getNextCellToFill() {
 		return toComplete.poll();
 	}
-	
-	public void printBoard() {
-		for(int x = 0; x < 10; x++)
-			System.out.println();
-		
-		for(int i = 0; i < boardSize; i++) {
-			for (int j = 0; j < boardSize; j++) {
-				System.out.print(board[i][j] + " ");
-			}
-			System.out.println();
-		}
-		
-		try {
-			TimeUnit.SECONDS.sleep(1);
-		} catch (InterruptedException e) {
-			e.printStackTrace();
-		}
-	}
-	
 }

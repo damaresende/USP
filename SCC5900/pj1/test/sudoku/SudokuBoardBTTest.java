@@ -35,7 +35,7 @@ public class SudokuBoardBTTest {
 		
 		String answerFile = System.getProperty("user.dir") + File.separator + "test" + File.separator 
 				+ "boards" + File.separator + "board1_answer.txt";
-		answer = new SudokuBoardBT();
+		answer = new SudokuBoardBT(3);
 		answer.fillData(answerFile);
 	}
 	
@@ -44,7 +44,7 @@ public class SudokuBoardBTTest {
      */
 	@Test
 	public void testBoardInitialization() {
-		SudokuBoardBT board = new SudokuBoardBT();
+		SudokuBoardBT board = new SudokuBoardBT(3);
 		
 		for(int i = 0; i < board.getBoardSize(); i++) {
 			for (int j = 0; j < board.getBoardSize(); j++) {
@@ -58,7 +58,7 @@ public class SudokuBoardBTTest {
      */
 	@Test
 	public void testParseBoardValues() {
-		SudokuBoardBT board = new SudokuBoardBT();
+		SudokuBoardBT board = new SudokuBoardBT(3);
 		board.fillData(boardFile);
 		
 		assertEquals(6, board.getCellValue(0, 1));
@@ -77,7 +77,7 @@ public class SudokuBoardBTTest {
      */
 	@Test
 	public void testEvaluateRowConstraint() {
-		SudokuBoardBT board = new SudokuBoardBT();
+		SudokuBoardBT board = new SudokuBoardBT(3);
 		board.fillData(boardFile);
 		
 		assertFalse(board.evaluate(new Coordinates(0, 0), 6));
@@ -89,7 +89,7 @@ public class SudokuBoardBTTest {
      */
 	@Test
 	public void testEvaluateColumnConstraint() {
-		SudokuBoardBT board = new SudokuBoardBT();
+		SudokuBoardBT board = new SudokuBoardBT(3);
 		board.fillData(boardFile);
 		
 		assertFalse(board.evaluate(new Coordinates(7, 0), 2));
@@ -143,7 +143,7 @@ public class SudokuBoardBTTest {
      */
 	@Test
 	public void testEvaluateSquareConstraint() {
-		SudokuBoardBT board = new SudokuBoardBT();
+		SudokuBoardBT board = new SudokuBoardBT(3);
 		board.fillData(boardFile);
 		
 		assertFalse(board.evaluate(new Coordinates(4, 4), 7));
@@ -157,7 +157,7 @@ public class SudokuBoardBTTest {
      */
 	@Test
 	public void testBacktrackingFullFill() {
-		SudokuBoardBT board = new SudokuBoardBT();
+		SudokuBoardBT board = new SudokuBoardBT(3);
 		
 		board.fillData(boardFile);
 		board.backtracking(board.getNextCellToFill());
@@ -170,7 +170,7 @@ public class SudokuBoardBTTest {
      */
 	@Test
 	public void testBacktrackingCorrectFill() {
-		SudokuBoardBT board = new SudokuBoardBT();
+		SudokuBoardBT board = new SudokuBoardBT(3);
 		board.fillData(boardFile);
 		board.backtracking(board.getNextCellToFill());
 

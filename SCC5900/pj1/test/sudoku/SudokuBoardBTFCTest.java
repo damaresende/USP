@@ -3,7 +3,7 @@
  * 
  * @author: Damares Resende
  * @contact: damaresresende@usp.br
- * @since: Apr 14, 2019
+ * @since: Apr 24, 2019
  * 
  * @organization: University of Sao Paulo (USP)
  *     Institute of Mathematics and Computer Science (ICMC)
@@ -40,7 +40,7 @@ public class SudokuBoardBTFCTest {
 		String answerFile = System.getProperty("user.dir") + File.separator + "test" + File.separator 
 				+ "boards" + File.separator + "board1_answer.txt";
 		
-		answer = new SudokuBoardBT();
+		answer = new SudokuBoardBT(3);
 		answer.fillData(answerFile);
 	}
 	
@@ -49,7 +49,7 @@ public class SudokuBoardBTFCTest {
      */
 	@Test
 	public void testBoardInitialization() {
-		SudokuBoardBTFC board = new SudokuBoardBTFC();
+		SudokuBoardBTFC board = new SudokuBoardBTFC(3);
 		
 		for(int i = 0; i < board.getBoardSize(); i++) {
 			for (int j = 0; j < board.getBoardSize(); j++) {
@@ -64,7 +64,7 @@ public class SudokuBoardBTFCTest {
      */
 	@Test
 	public void testFillDataDomain() {
-		SudokuBoardBTFC board = new SudokuBoardBTFC();
+		SudokuBoardBTFC board = new SudokuBoardBTFC(3);
 		
 		board.fillData(boardFile);
 		board.initDomain();
@@ -97,7 +97,7 @@ public class SudokuBoardBTFCTest {
      */
 	@Test
 	public void testUpdateDomainCellRow() {
-		SudokuBoardBTFC board = new SudokuBoardBTFC();
+		SudokuBoardBTFC board = new SudokuBoardBTFC(3);
 		
 		board.fillData(boardFile);
 		board.initDomain();
@@ -113,7 +113,7 @@ public class SudokuBoardBTFCTest {
      */
 	@Test
 	public void testUpdateDomainCleanRows() {
-		SudokuBoardBTFC board = new SudokuBoardBTFC();
+		SudokuBoardBTFC board = new SudokuBoardBTFC(3);
 		
 		board.fillData(boardFile);
 		board.initDomain();	
@@ -151,7 +151,7 @@ public class SudokuBoardBTFCTest {
      */
 	@Test
 	public void testUpdateDomainCleanColumns() {
-		SudokuBoardBTFC board = new SudokuBoardBTFC();
+		SudokuBoardBTFC board = new SudokuBoardBTFC(3);
 		
 		board.fillData(boardFile);
 		board.initDomain();		
@@ -191,7 +191,7 @@ public class SudokuBoardBTFCTest {
      */
 	@Test
 	public void testUpdateDomainCleanSquare() {
-		SudokuBoardBTFC board = new SudokuBoardBTFC();
+		SudokuBoardBTFC board = new SudokuBoardBTFC(3);
 		
 		board.fillData(boardFile);
 		board.initDomain();		
@@ -232,7 +232,7 @@ public class SudokuBoardBTFCTest {
      */
 	@Test
 	public void testRestoreDomain() {
-		SudokuBoardBTFC board = new SudokuBoardBTFC();
+		SudokuBoardBTFC board = new SudokuBoardBTFC(3);
 		
 		board.fillData(boardFile);
 		board.initDomain();
@@ -253,17 +253,33 @@ public class SudokuBoardBTFCTest {
 		}
 	}
 	
-	/**
-     * Tests if all values to be filled are filled after backtracking
-     */
-	@Test
-	public void testBacktrackingFullFill() {
-		SudokuBoardBTFC board = new SudokuBoardBTFC();
-		
-		board.fillData(boardFile);
-		board.initDomain();
-		board.backtracking(board.getNextCellToFill());
-		
-		assertTrue(board.toCompleteIsEmpty());
-	}
+//	/**
+//     * Tests if all values to be filled are filled after backtracking
+//     */
+//	@Test
+//	public void testBacktrackingFullFill() {
+//		SudokuBoardBTFC board = new SudokuBoardBTFC(3);
+//		
+//		board.fillData(boardFile);
+//		board.initDomain();
+//		board.backtracking(board.getNextCellToFill());
+//		
+//		assertTrue(board.toCompleteIsEmpty());
+//	}
+	
+//	/**
+//     * Tests if all values to be filled are correctly filled after backtracking
+//     */
+//	@Test
+//	public void testBacktrackingCorrectFill() {
+//		SudokuBoardBT board = new SudokuBoardBT(3);
+//		board.fillData(boardFile);
+//		board.backtracking(board.getNextCellToFill());
+//
+//		for(int i = 0; i < board.getBoardSize(); i++) {
+//			for (int j = 0; j < board.getBoardSize(); j++) {
+//				assertEquals(answer.getCellValue(i, j), board.getCellValue(i, j));
+//			}
+//		}
+//	}
 }
