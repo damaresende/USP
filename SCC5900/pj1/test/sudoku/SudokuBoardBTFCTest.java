@@ -26,8 +26,9 @@ import org.junit.Test;
 
 public class SudokuBoardBTFCTest {
 
+	public static String boardFile;
 	public static SudokuBoardBT answer;
-	public static String boardFile; 
+	public static SudokuBoardBTFC board;
 	
 	/**
      * Setting up answer board and board file name
@@ -40,21 +41,43 @@ public class SudokuBoardBTFCTest {
 		String answerFile = System.getProperty("user.dir") + File.separator + "test" + File.separator 
 				+ "boards" + File.separator + "board1_answer.txt";
 		
+		String line = "";
+		BufferedReader reader = new BufferedReader(new FileReader(answerFile));
+		
 		answer = new SudokuBoardBT(3);
-		answer.fillData(answerFile);
+		while ((line = reader.readLine()) != null) {
+			answer.fillData(line);
+		}
+		reader.close();
+		
+		reader = new BufferedReader(new FileReader(boardFile));
+		
+		board = new SudokuBoardBTFC(3);
+		while ((line = reader.readLine()) != null) {
+			board.fillData(line);
+		}
+		reader.close();
 	}
 	
 	/**
      * Tests if domain values are initialized to true for all values
+	 * @throws IOException 
      */
 	@Test
-	public void testBoardInitialization() {
-		SudokuBoardBTFC board = new SudokuBoardBTFC(3);
+	public void testBoardInitialization() throws IOException {
+		String line = "";
+		BufferedReader reader = new BufferedReader(new FileReader(boardFile));
 		
-		for(int i = 0; i < board.getBoardSize(); i++) {
-			for (int j = 0; j < board.getBoardSize(); j++) {
-				assertNotNull(board.getDomain(i, j));
-				assertEquals(0, board.getDomain(i, j).size());
+		SudokuBoardBTFC sboard = new SudokuBoardBTFC(3);
+		while ((line = reader.readLine()) != null) {
+			sboard.fillData(line);
+		}
+		reader.close();
+		
+		for(int i = 0; i < sboard.getBoardSize(); i++) {
+			for (int j = 0; j < sboard.getBoardSize(); j++) {
+				assertNotNull(sboard.getDomain(i, j));
+				assertEquals(0, sboard.getDomain(i, j).size());
 			}
 		}
 	}
@@ -64,9 +87,6 @@ public class SudokuBoardBTFCTest {
      */
 	@Test
 	public void testFillDataDomain() {
-		SudokuBoardBTFC board = new SudokuBoardBTFC(3);
-		
-		board.fillData(boardFile);
 		board.initDomain();
 		
 		String initialDomain = System.getProperty("user.dir") + File.separator + "test" + File.separator 
@@ -97,9 +117,6 @@ public class SudokuBoardBTFCTest {
      */
 	@Test
 	public void testUpdateDomainCellRow() {
-		SudokuBoardBTFC board = new SudokuBoardBTFC(3);
-		
-		board.fillData(boardFile);
 		board.initDomain();
 		board.updateDomain(5, 2, 7);
 		
@@ -113,9 +130,6 @@ public class SudokuBoardBTFCTest {
      */
 	@Test
 	public void testUpdateDomainCleanRows() {
-		SudokuBoardBTFC board = new SudokuBoardBTFC(3);
-		
-		board.fillData(boardFile);
 		board.initDomain();	
 		board.updateDomain(2, 2, 4);
 		
@@ -151,9 +165,6 @@ public class SudokuBoardBTFCTest {
      */
 	@Test
 	public void testUpdateDomainCleanColumns() {
-		SudokuBoardBTFC board = new SudokuBoardBTFC(3);
-		
-		board.fillData(boardFile);
 		board.initDomain();		
 		board.updateDomain(2, 2, 4);
 		
@@ -191,9 +202,6 @@ public class SudokuBoardBTFCTest {
      */
 	@Test
 	public void testUpdateDomainCleanSquare() {
-		SudokuBoardBTFC board = new SudokuBoardBTFC(3);
-		
-		board.fillData(boardFile);
 		board.initDomain();		
 		board.updateDomain(4, 3, 8);
 		
@@ -232,9 +240,6 @@ public class SudokuBoardBTFCTest {
      */
 	@Test
 	public void testRestoreDomain() {
-		SudokuBoardBTFC board = new SudokuBoardBTFC(3);
-		
-		board.fillData(boardFile);
 		board.initDomain();
 		
 		board.updateDomain(5, 1, 3);
@@ -255,30 +260,45 @@ public class SudokuBoardBTFCTest {
 	
 //	/**
 //     * Tests if all values to be filled are filled after backtracking
+//	 * @throws IOException 
 //     */
 //	@Test
-//	public void testBacktrackingFullFill() {
-//		SudokuBoardBTFC board = new SudokuBoardBTFC(3);
+//	public void testBacktrackingFullFill() throws IOException {
+//		String line = "";
+//		BufferedReader reader = new BufferedReader(new FileReader(boardFile));
 //		
-//		board.fillData(boardFile);
-//		board.initDomain();
-//		board.backtracking(board.getNextCellToFill());
+//		SudokuBoardBTFC sboard = new SudokuBoardBTFC(3);
+//		while ((line = reader.readLine()) != null) {
+//			sboard.fillData(line);
+//		}
+//		reader.close();
 //		
-//		assertTrue(board.toCompleteIsEmpty());
+//		sboard.initDomain();
+//		sboard.backtracking(sboard.getNextCellToFill());
+//		
+//		assertTrue(sboard.toCompleteIsEmpty());
 //	}
-	
+//	
 //	/**
 //     * Tests if all values to be filled are correctly filled after backtracking
+//	 * @throws IOException 
 //     */
 //	@Test
-//	public void testBacktrackingCorrectFill() {
-//		SudokuBoardBT board = new SudokuBoardBT(3);
-//		board.fillData(boardFile);
-//		board.backtracking(board.getNextCellToFill());
+//	public void testBacktrackingCorrectFill() throws IOException {
+//		String line = "";
+//		BufferedReader reader = new BufferedReader(new FileReader(boardFile));
+//		
+//		SudokuBoardBTFC sboard = new SudokuBoardBTFC(3);
+//		while ((line = reader.readLine()) != null) {
+//			sboard.fillData(line);
+//		}
+//		reader.close();
+//		
+//		sboard.backtracking(sboard.getNextCellToFill());
 //
-//		for(int i = 0; i < board.getBoardSize(); i++) {
-//			for (int j = 0; j < board.getBoardSize(); j++) {
-//				assertEquals(answer.getCellValue(i, j), board.getCellValue(i, j));
+//		for(int i = 0; i < sboard.getBoardSize(); i++) {
+//			for (int j = 0; j < sboard.getBoardSize(); j++) {
+//				assertEquals(answer.getCellValue(i, j), sboard.getCellValue(i, j));
 //			}
 //		}
 //	}

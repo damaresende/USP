@@ -59,6 +59,10 @@ public class SudokuBoardBTFC extends SudokuBoardBT {
      * Initializes domain based on the board loaded
      */
 	protected void initDomain() {
+		for(int i = 0; i < boardSize * boardSize; i++) {
+			domain[i].clear();
+		}
+		
 		for(int i = 0; i < boardSize; i++) {
 			for (int j = 0; j < boardSize; j++) {
 				if (board[i][j] != 0) {

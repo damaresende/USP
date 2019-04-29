@@ -15,6 +15,9 @@ package sudoku;
 import static org.junit.Assert.*;
 
 import java.io.File;
+import java.io.FileReader;
+import java.io.IOException;
+import java.io.BufferedReader;
 
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -22,6 +25,7 @@ import org.junit.Test;
 
 public class SudokuBoardBTTest {
 
+	public static SudokuBoardBT board;
 	public static SudokuBoardBT answer;
 	public static String boardFile; 
 	
@@ -35,8 +39,23 @@ public class SudokuBoardBTTest {
 		
 		String answerFile = System.getProperty("user.dir") + File.separator + "test" + File.separator 
 				+ "boards" + File.separator + "board1_answer.txt";
+		
+		String line = "";
+		BufferedReader reader = new BufferedReader(new FileReader(answerFile));
+		
 		answer = new SudokuBoardBT(3);
-		answer.fillData(answerFile);
+		while ((line = reader.readLine()) != null) {
+			answer.fillData(line);
+		}
+		reader.close();
+		
+		reader = new BufferedReader(new FileReader(boardFile));
+		
+		board = new SudokuBoardBT(3);
+		while ((line = reader.readLine()) != null) {
+			board.fillData(line);
+		}
+		reader.close();
 	}
 	
 	/**
@@ -44,11 +63,11 @@ public class SudokuBoardBTTest {
      */
 	@Test
 	public void testBoardInitialization() {
-		SudokuBoardBT board = new SudokuBoardBT(3);
+		SudokuBoardBT zboard = new SudokuBoardBT(3);
 		
-		for(int i = 0; i < board.getBoardSize(); i++) {
-			for (int j = 0; j < board.getBoardSize(); j++) {
-				assertEquals(board.getCellValue(i, j), 0);
+		for(int i = 0; i < zboard.getBoardSize(); i++) {
+			for (int j = 0; j < zboard.getBoardSize(); j++) {
+				assertEquals(zboard.getCellValue(i, j), 0);
 			}
 		}
 	}
@@ -58,9 +77,6 @@ public class SudokuBoardBTTest {
      */
 	@Test
 	public void testParseBoardValues() {
-		SudokuBoardBT board = new SudokuBoardBT(3);
-		board.fillData(boardFile);
-		
 		assertEquals(6, board.getCellValue(0, 1));
 		assertEquals(8, board.getCellValue(1, 2));
 		assertEquals(2, board.getCellValue(2, 0));
@@ -77,9 +93,6 @@ public class SudokuBoardBTTest {
      */
 	@Test
 	public void testEvaluateRowConstraint() {
-		SudokuBoardBT board = new SudokuBoardBT(3);
-		board.fillData(boardFile);
-		
 		assertFalse(board.evaluate(new Coordinates(0, 0), 6));
 		assertTrue(board.evaluate(new Coordinates(0, 2), 3));
 	}
@@ -89,9 +102,6 @@ public class SudokuBoardBTTest {
      */
 	@Test
 	public void testEvaluateColumnConstraint() {
-		SudokuBoardBT board = new SudokuBoardBT(3);
-		board.fillData(boardFile);
-		
 		assertFalse(board.evaluate(new Coordinates(7, 0), 2));
 		assertTrue(board.evaluate(new Coordinates(4, 0), 4));
 	}
@@ -143,9 +153,6 @@ public class SudokuBoardBTTest {
      */
 	@Test
 	public void testEvaluateSquareConstraint() {
-		SudokuBoardBT board = new SudokuBoardBT(3);
-		board.fillData(boardFile);
-		
 		assertFalse(board.evaluate(new Coordinates(4, 4), 7));
 		assertFalse(board.evaluate(new Coordinates(2, 7), 6));
 		assertFalse(board.evaluate(new Coordinates(5, 1), 8));
@@ -154,29 +161,45 @@ public class SudokuBoardBTTest {
 	
 	/**
      * Tests if all values to be filled are filled after backtracking
+	 * @throws IOException 
      */
 	@Test
-	public void testBacktrackingFullFill() {
-		SudokuBoardBT board = new SudokuBoardBT(3);
+	public void testBacktrackingFullFill() throws IOException {
+		String line = "";
+		BufferedReader reader = new BufferedReader(new FileReader(boardFile));
 		
-		board.fillData(boardFile);
-		board.backtracking(board.getNextCellToFill());
+		SudokuBoardBT sboard = new SudokuBoardBT(3);
 		
-		assertTrue(board.toCompleteIsEmpty());
+		while ((line = reader.readLine()) != null) {
+			sboard.fillData(line);
+		}
+		reader.close();
+		
+		sboard.backtracking(sboard.getNextCellToFill());
+		assertTrue(sboard.toCompleteIsEmpty());
 	}
 	
 	/**
      * Tests if all values to be filled are correctly filled after backtracking
+	 * @throws IOException 
      */
 	@Test
-	public void testBacktrackingCorrectFill() {
-		SudokuBoardBT board = new SudokuBoardBT(3);
-		board.fillData(boardFile);
-		board.backtracking(board.getNextCellToFill());
+	public void testBacktrackingCorrectFill() throws IOException {
+		String line = "";
+		BufferedReader reader = new BufferedReader(new FileReader(boardFile));
+		
+		SudokuBoardBT sboard = new SudokuBoardBT(3);
+		
+		while ((line = reader.readLine()) != null) {
+			sboard.fillData(line);
+		}
+		reader.close();
+		
+		sboard.backtracking(sboard.getNextCellToFill());
 
-		for(int i = 0; i < board.getBoardSize(); i++) {
-			for (int j = 0; j < board.getBoardSize(); j++) {
-				assertEquals(answer.getCellValue(i, j), board.getCellValue(i, j));
+		for(int i = 0; i < sboard.getBoardSize(); i++) {
+			for (int j = 0; j < sboard.getBoardSize(); j++) {
+				assertEquals(answer.getCellValue(i, j), sboard.getCellValue(i, j));
 			}
 		}
 	}

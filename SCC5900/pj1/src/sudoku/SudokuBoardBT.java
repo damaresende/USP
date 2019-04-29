@@ -13,26 +13,25 @@
 
 package sudoku;
 
-import java.io.BufferedReader;
-import java.io.FileReader;
-import java.io.IOException;
 import java.util.LinkedList;
 import java.util.Queue;
 
 
 public class SudokuBoardBT {
 	
+	private int row;
 	protected int[][] board;
 	protected int boardDim;
 	protected int boardSize;
 	protected Queue<Coordinates> toComplete;
 	
 	/**
-     * Creates a dimxdim matrix
+     * Creates a dim x dim matrix
      * 
      * @param dim: dimension of the Sudoku board
      */
 	public SudokuBoardBT(int dim) {
+		this.row = 0;
 		this.boardDim = dim;
 		this.boardSize = boardDim * boardDim;
 		
@@ -44,43 +43,31 @@ public class SudokuBoardBT {
      * Reads data from the specified file and fills each cell of the Sudoku board
      * with the values indicated.
      * 
-     * @param boardFile: string with board file path and name
+     * @param line: sudoku input line
      * @return true if board was successfully filled, false otherwise
      */
-	public boolean fillData(String boardFile) {
+	public boolean fillData(String line) {
 		try {
-			BufferedReader reader = new BufferedReader(new FileReader(boardFile));
-			String line = "";
-			int i = 0;
+			String [] parts = line.trim().split(" ");
 			
-			while ((line = reader.readLine()) != null) {
-				String [] parts = line.trim().split(" ");
+			if (parts.length != boardSize) {
+				System.out.println("ERROR: The number of board values per row should be " + boardSize + ".");
+				return false;
+			}
+			
+			for (int j = 0; j < boardSize; j++) {
+				board[row][j] = Integer.parseInt(parts[j]);
 				
-				if (parts.length != boardSize) {
-					System.out.println("ERROR: The number of board values per row should be " + boardSize + ".");
-					reader.close();
+				if (board[row][j] > boardSize || board[row][j] < 0) {
+					System.out.println("ERROR: Board values must be in between 0 and "  + boardSize + ".");
 					return false;
 				}
 				
-				for (int j = 0; j < boardSize; j++) {
-					board[i][j] = Integer.parseInt(parts[j]);
-					
-					if (board[i][j] > boardSize || board[i][j] < 0) {
-						System.out.println("ERROR: Board values must be in between 0 and "  + boardSize + ".");
-						reader.close();
-						return false;
-					}
-					
-					if (board[i][j] == 0) {
-						toComplete.add(new Coordinates(i, j));
-					}
+				if (board[row][j] == 0) {
+					toComplete.add(new Coordinates(row, j));
 				}
-				i++;
 			}
-			reader.close();
-		} catch (IOException e) {
-			System.out.println("ERROR: Board file could not be read");
-			return false;
+			row++;
 		} catch (NumberFormatException e) {
 			System.out.println("ERROR: Board value could not be parsed");
 			return false;
