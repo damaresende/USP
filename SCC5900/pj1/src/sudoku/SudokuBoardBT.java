@@ -23,6 +23,9 @@ public class SudokuBoardBT {
 	protected int[][] board;
 	protected int boardDim;
 	protected int boardSize;
+	private boolean isSaturated;
+	private int numOfAttributions;
+
 	protected Queue<Coordinates> toComplete;
 	
 	/**
@@ -33,6 +36,22 @@ public class SudokuBoardBT {
 	public SudokuBoardBT(int dim) {
 		this.row = 0;
 		this.boardDim = dim;
+		this.isSaturated = false;
+		this.numOfAttributions = 0;
+		this.boardSize = boardDim * boardDim;
+		
+		board = new int[boardSize][boardSize];
+		toComplete = new LinkedList<Coordinates>();
+	}
+	
+	/**
+     * Resets board structure 
+     */
+	public void reset(int dim) {
+		this.row = 0;
+		this.boardDim = dim;
+		this.isSaturated = false;
+		this.numOfAttributions = 0;
 		this.boardSize = boardDim * boardDim;
 		
 		board = new int[boardSize][boardSize];
@@ -82,10 +101,15 @@ public class SudokuBoardBT {
      * @return true if there are no values to be filled, false otherwise
      */
 	public boolean backtracking(Coordinates cell) {
-		
 		for(int i = 1; i <= boardSize; i++) {
 			if (evaluate(cell, i)) {
 				board[cell.getI()][cell.getJ()] = i;
+				this.numOfAttributions++;
+				
+				if (numOfAttributions > 10e6) {
+					this.isSaturated = true;
+					return false;
+				}
 				
 				if (toComplete.size() == 0) {
 					return true;
@@ -94,14 +118,20 @@ public class SudokuBoardBT {
 				if (backtracking(toComplete.poll())) {
 					return true;
 				} else {
-					board[cell.getI()][cell.getJ()] = -1;
+					board[cell.getI()][cell.getJ()] = 0;
 				}
-					
 			}
 		}
 		
 		toComplete.add(cell);
 		return false;
+	}
+	
+	/**
+     * Solves Sudoku by using backtracking
+     */
+	public boolean resolve() {
+		return backtracking(getNextCellToFill());
 	}
 	
 	/**
@@ -145,6 +175,15 @@ public class SudokuBoardBT {
 	}
 	
 	/**
+     * Retrieves the number of attributions
+     * 
+     * @return number of attributions
+     */
+	public int getNumOfAttributions() {
+		return numOfAttributions;
+	}
+	
+	/**
      * Gets cell value based on the specified coordinates
      * 
      * @param i: row coordinate
@@ -172,5 +211,26 @@ public class SudokuBoardBT {
      */
 	public Coordinates getNextCellToFill() {
 		return toComplete.poll();
+	}
+	
+	/**
+     * Saturation flag
+     * 
+     * @return true if number of attributions exceeds 10e6
+     */
+	public boolean isSaturated() {
+		return isSaturated;
+	}
+	
+	/**
+     * Prints Sudoku board
+     */
+	public void printBoard() {
+		for(int i = 0; i < boardSize; i++) {
+			for(int j = 0; j < boardSize; j++) {
+				System.out.print(board[i][j] + " ");
+			}
+			System.out.println();
+		}
 	}
 }
