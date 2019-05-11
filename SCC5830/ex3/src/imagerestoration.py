@@ -12,7 +12,7 @@ Image restoration
 import imageio
 import numpy as np
 from enum import Enum
-from math import sqrt
+from math import sqrt, floor
 
 
 class NoiseType(Enum):
@@ -105,8 +105,9 @@ class FilterFactory:
             return DenoisingFilter()
         if method == 2:
             return DebluringFilter()
-        
-    def normalize(self, img):
+    
+    @staticmethod
+    def normalize(img, gmax):
         '''
         Normalizes image in values between 0 and 255
         
@@ -115,9 +116,10 @@ class FilterFactory:
         imax = np.max(img)
         imin = np.min(img)
         
-        return ((img-imin)/(imax-imin) * (pow(2, 8) - 1)).astype(np.int32)
+        return ((img-imin)/(imax-imin) * gmax)
     
-    def calc_rmse(self, img1, img2):
+    @staticmethod
+    def calc_rmse(img1, img2):
         '''
         Computes RMSE in between two images
         
@@ -135,9 +137,51 @@ class DenoisingFilter:
         self.kernel = int(input())
         self.mode = str(input()).strip()
     
-    def restore_img(self):
-        pass
-    
+    def iqr(self, mask):
+        mask = np.sort(mask.flatten())
+        middle = round(mask.shape[0]/2)
+        quart_middle = round(mask.shape[0]/4)
+        return mask[middle + quart_middle] - mask[quart_middle]
+#         return np.percentile(mask, 75) - np.percentile(mask, 25) 
+        
+    def calc_disp(self, mask):
+        if self.mode == '"average"':
+            return np.std(mask)
+        elif self.mode == '"robust"':
+            return self.iqr(mask)
+        else:
+            raise ValueError("Dispersion mode is unknown.")
+      
+    def calc_centrl(self, mask):
+        if self.mode == '"average"':
+            return np.mean(mask)
+        elif self.mode == '"robust"':
+            return np.median(mask)
+        else:
+            raise ValueError("Dispersion mode is unknown.")
+            
+    def restore_img(self, img):
+        dispn = img[0:floor(img.shape[0]/6)-1, 0:floor(img.shape[1]/6)-1]
+        dispn = self.calc_disp(dispn)
+        dispn = 1 if dispn == 0 else dispn
+        
+        padding = int((self.kernel-1) / 2)
+        new_img = np.copy(img)
+        
+        for i in range(padding, img.shape[0] - padding):
+            for j in range(padding, img.shape[1] - padding):
+                mask = img[i-padding:i+padding+1, j-padding:j+padding+1]
+                centrl = self.calc_centrl(mask)
+                displ = self.calc_disp(mask)
+                displ = dispn if displ == 0 else displ
+                
+                if dispn > displ:
+                    displ = dispn
+                    
+                new_img[i][j] = img[i][j] - (self.gamma * dispn / displ) * (img[i][j] - centrl)
+                                
+        return new_img
+
 
 class DebluringFilter:
     def __init__(self):
@@ -154,13 +198,13 @@ def run_restoration():
     deg_img_name = str(input()).rstrip()
     filter_type = int(input())
     
-    ref_img = imageio.imread(deg_img_name)
+    deg_img = imageio.imread(deg_img_name).astype(np.float)
     
     rest_filter = FilterFactory.init_filter(filter_type)
-    restored_img = rest_filter.restore_img(ref_img)
+    restored_img = FilterFactory.normalize(rest_filter.restore_img(deg_img), np.max(deg_img))
       
-    deg_img = imageio.imread(ref_img_name)
-    rmse = rest_filter.calc_rmse(deg_img, rest_filter.normalize(restored_img))
+    ref_img = imageio.imread(ref_img_name)
+    rmse = FilterFactory.calc_rmse(ref_img, restored_img.astype(np.uint8))
     
     return ref_img, deg_img, restored_img, rmse
 
