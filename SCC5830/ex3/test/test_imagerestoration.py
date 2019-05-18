@@ -43,14 +43,14 @@ class IMGRestorationTests(unittest.TestCase):
                         [236,  61, 137,  69,  42,  84, 150,  46, 148, 110, 217, 249, 149, 238,   1, 187, 160,  26],
                         [230, 125,  61, 180, 135,  54,   1, 191,  64, 197, 217, 128,  88, 240,  65,  19, 106,  32]])
          
-        user_input = ['0.15', '5', '"average"']
+        user_input = ['0.15', '5', 'average']
         with patch('builtins.input', side_effect=user_input):
             filt = imagerestoration.DenoisingFilter()
             dispn = img[0:ceil(img.shape[0]/6 - 1), 0:ceil(img.shape[1]/6 -1)]
             dispn = filt.calc_disp(dispn)
             self.assertEqual(53.9508, round(dispn, 4))
              
-        user_input = ['0.15', '5', '"robust"']
+        user_input = ['0.15', '5', 'robust']
         with patch('builtins.input', side_effect=user_input):
             filt = imagerestoration.DenoisingFilter()
             dispn = img[0:ceil(img.shape[0]/6 - 1), 0:ceil(img.shape[1]/6 -1)]
@@ -58,18 +58,18 @@ class IMGRestorationTests(unittest.TestCase):
             self.assertEqual(51, dispn)
     
     def test_denoising_polygons_average(self):
-        user_input = ['files/polygons128.png', 'files/case2_45.png', '1', '0.15', '5', '"average"']
-        expected_output = 7.722
-        left_bound = expected_output + expected_output * 0.2
+        user_input = ['files/polygons128.png', 'files/case2_45.png', '1', '0.15', '5', 'average']
+        expected_output = 25.722
+        left_bound = expected_output - expected_output * 0.2
         right_bound = expected_output + expected_output * 0.2
          
         with patch('builtins.input', side_effect=user_input):
             ref_img, deg_img, restored_img, rmse = imagerestoration.run_restoration()
-            print('Polygon denoising (average) RMSE: %s' % str(rmse))
+            print('Test 1: Polygon denoising (average) RMSE: %s' % str(rmse))
              
             self.assertTrue(np.amax(restored_img) == np.max(deg_img))
             self.assertTrue(np.amin(restored_img) == 0)
-#             self.assertTrue(left_bound < rmse < right_bound)
+            self.assertTrue(left_bound < rmse < right_bound)
              
         plt.figure()
         plt.subplot(131)
@@ -81,17 +81,19 @@ class IMGRestorationTests(unittest.TestCase):
         plt.show()
 
     def test_denoising_polygons_robust(self):
-        user_input = ['files/polygons128.png', 'files/case2_45.png', '1', '0.95', '5', '"robust"']
-        expected_output = 8.401
-        
+        user_input = ['files/polygons128.png', 'files/case2_45.png', '1', '0.95', '5', 'robust']
+        expected_output = 30.401
+        left_bound = expected_output - expected_output * 0.2
+        right_bound = expected_output + expected_output * 0.2
+         
         with patch('builtins.input', side_effect=user_input):
             ref_img, deg_img, restored_img, rmse = imagerestoration.run_restoration()
-            print('Polygons denoising (robust) RMSE: %s' % str(rmse))
-             
+            print('Test 2: Polygons denoising (robust) RMSE: %s' % str(rmse))
+              
             self.assertTrue(np.amax(restored_img) == np.max(deg_img))
             self.assertTrue(np.amin(restored_img) == 0)
-#             self.assertTrue(left_bound < rmse < right_bound)
-             
+            self.assertTrue(left_bound < rmse < right_bound)
+              
         plt.figure()
         plt.subplot(131)
         plt.imshow(ref_img, cmap="gray", vmin=0, vmax=255)
@@ -100,19 +102,21 @@ class IMGRestorationTests(unittest.TestCase):
         plt.subplot(133)
         plt.imshow(restored_img, cmap="gray", vmin=0, vmax=255)
         plt.show() 
-         
+          
     def test_denoising_moon_robust(self):
-        user_input = ['files/moon.jpg', 'files/case3_70.png', '1', '0.8', '5', '"robust"']
-        expected_output = 8.475
-        
+        user_input = ['files/moon.jpg', 'files/case3_70.png', '1', '0.8', '5', 'robust']
+        expected_output = 26.475
+        left_bound = expected_output - expected_output * 0.2
+        right_bound = expected_output + expected_output * 0.2
+         
         with patch('builtins.input', side_effect=user_input):
             ref_img, deg_img, restored_img, rmse = imagerestoration.run_restoration()
-            print('Moon denoising (robust) RMSE: %s' % str(rmse))
-             
+            print('Test 3: Moon denoising (robust) RMSE: %s' % str(rmse))
+              
             self.assertTrue(np.amax(restored_img) == np.max(deg_img))
             self.assertTrue(np.amin(restored_img) == 0)
-#             self.assertTrue(left_bound < rmse < right_bound)
-             
+            self.assertTrue(left_bound < rmse < right_bound)
+              
         plt.figure()
         plt.subplot(131)
         plt.imshow(ref_img, cmap="gray", vmin=0, vmax=255)
@@ -121,19 +125,21 @@ class IMGRestorationTests(unittest.TestCase):
         plt.subplot(133)
         plt.imshow(restored_img, cmap="gray", vmin=0, vmax=255)
         plt.show() 
-#         
-    def test_denoising_moon_average(self):
-        user_input = ['files/moon.jpg', 'files/case3_70.png', '1', '1.0', '5', '"average"']
-        expected_output = 8.640
          
+    def test_denoising_moon_average(self):
+        user_input = ['files/moon.jpg', 'files/case3_70.png', '1', '1.0', '5', 'average']
+        expected_output = 26.640
+        left_bound = expected_output - expected_output * 0.2
+        right_bound = expected_output + expected_output * 0.2
+          
         with patch('builtins.input', side_effect=user_input):
             ref_img, deg_img, restored_img, rmse = imagerestoration.run_restoration()
-            print('Moon denoising (average) RMSE: %s' % str(rmse))
-             
+            print('Test 4: Moon denoising (average) RMSE: %s' % str(rmse))
+              
             self.assertTrue(np.amax(restored_img) == np.max(deg_img))
             self.assertTrue(np.amin(restored_img) == 0)
-#             self.assertTrue(left_bound < rmse < right_bound)
-             
+            self.assertTrue(left_bound < rmse < right_bound)
+              
         plt.figure()
         plt.subplot(131)
         plt.imshow(ref_img, cmap="gray", vmin=0, vmax=255)

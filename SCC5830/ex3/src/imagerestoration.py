@@ -142,20 +142,19 @@ class DenoisingFilter:
         middle = round(mask.shape[0]/2)
         quart_middle = round(mask.shape[0]/4)
         return mask[middle + quart_middle] - mask[quart_middle]
-#         return np.percentile(mask, 75) - np.percentile(mask, 25) 
         
     def calc_disp(self, mask):
-        if self.mode == '"average"':
+        if self.mode == 'average':
             return np.std(mask)
-        elif self.mode == '"robust"':
+        elif self.mode == 'robust':
             return self.iqr(mask)
         else:
             raise ValueError("Dispersion mode is unknown.")
       
     def calc_centrl(self, mask):
-        if self.mode == '"average"':
+        if self.mode == 'average':
             return np.mean(mask)
-        elif self.mode == '"robust"':
+        elif self.mode == 'robust':
             return np.median(mask)
         else:
             raise ValueError("Dispersion mode is unknown.")
@@ -204,7 +203,7 @@ def run_restoration():
     restored_img = FilterFactory.normalize(rest_filter.restore_img(deg_img), np.max(deg_img))
       
     ref_img = imageio.imread(ref_img_name)
-    rmse = FilterFactory.calc_rmse(ref_img, restored_img.astype(np.uint8))
+    rmse = FilterFactory.calc_rmse(ref_img.astype(np.float), restored_img.astype(np.uint8))
     
     return ref_img, deg_img, restored_img, rmse
 
