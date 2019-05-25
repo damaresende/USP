@@ -3,7 +3,7 @@ Image restoration
 
 @author: Damares Resende
 @contact: damaresresende@usp.br
-@since: MAy 11, 2019
+@since: May 11, 2019
 
 @organization: University of Sao Paulo (USP)
     Institute of Mathematics and Computer Science (ICMC)
@@ -13,9 +13,13 @@ import imageio
 import numpy as np
 from enum import Enum
 from math import sqrt, floor
+from scipy.fftpack import fftn, ifftn, ifftshift
 
 
 class NoiseType(Enum):
+    """
+    Type of noises to add to image
+    """
     UNIFORM = 1
     GAUSSIAN = 2
     IMPULSIVE = 3
@@ -78,6 +82,14 @@ class IMGNoiseGenerator:
 
     @staticmethod
     def create_noisy_image(img_name_in, img_name_out, noise_type, **kwargs):
+        """
+        Creates and saves a noisy image based on an input image
+        
+        @param img_name_in: string with input image
+        @param img_name_out: string with output image
+        @param noise_type: type of noise to add to image
+        @param kwargs: arguments to be used to generate the noise
+        """
         img = imageio.imread(img_name_in)
         
         if noise_type == NoiseType.UNIFORM:
@@ -90,7 +102,11 @@ class IMGNoiseGenerator:
             noisy_img = IMGNoiseGenerator.impulsive_noise(img, kwargs.get("prob", 0.1))
             imageio.imwrite(img_name_out, noisy_img)
         elif noise_type == NoiseType.BLURED:
-            pass
+            window = np.ones((7,7))
+            window /= np.sum(window)
+            from scipy.signal import convolve2d
+            blured_img = convolve2d(img, window, mode="same", boundary="symm")
+            imageio.imwrite(img_name_out, blured_img.astype(np.uint8))
 
        
 class FilterFactory:
@@ -133,17 +149,30 @@ class FilterFactory:
 
 class DenoisingFilter:
     def __init__(self):
+        """
+        Initializes main parameters
+        """
         self.gamma = float(input())
         self.kernel = int(input())
         self.mode = str(input()).strip()
     
     def iqr(self, mask):
+        """
+        Computes the interquartile range
+        
+        @param mask: set of reference pixels
+        """
         mask = np.sort(mask.flatten())
         middle = round(mask.shape[0]/2)
         quart_middle = round(mask.shape[0]/4)
         return mask[middle + quart_middle] - mask[quart_middle]
         
     def calc_disp(self, mask):
+        """
+        Calculates the dispersion measure
+        
+        @param mask: set of reference pixels
+        """
         if self.mode == 'average':
             return np.std(mask)
         elif self.mode == 'robust':
@@ -152,6 +181,11 @@ class DenoisingFilter:
             raise ValueError("Dispersion mode is unknown.")
       
     def calc_centrl(self, mask):
+        """
+        Calculates the centrality measure
+        
+        @param mask: set of reference pixels
+        """
         if self.mode == 'average':
             return np.mean(mask)
         elif self.mode == 'robust':
@@ -160,6 +194,12 @@ class DenoisingFilter:
             raise ValueError("Dispersion mode is unknown.")
             
     def restore_img(self, img):
+        """
+        Removes noise from the given image based on the dispersion of a sample of the image
+        and the centrality measure of each pixel.
+        
+        @param img: numpy array with image to be filtered
+        """
         dispn = img[0:floor(img.shape[0]/6)-1, 0:floor(img.shape[1]/6)-1]
         dispn = self.calc_disp(dispn)
         dispn = 1 if dispn == 0 else dispn
@@ -184,15 +224,62 @@ class DenoisingFilter:
 
 class DebluringFilter:
     def __init__(self):
+        """
+        Initializes main parameters
+        """
         self.gamma = float(input())
         self.kernel = int(input())
         self.sigma = float(input())
 
-    def restore_img(self):
-        pass
-
+    def restore_img(self, img):
+        """
+        Deblurs a given image
+        
+        @param img: numpy array with image to be filtered
+        """
+        g_u = fftn(img)
+        h_u = fftn(self.gaussian_filter(img, self.kernel, self.sigma))
+        h_u_abs = np.abs(h_u)
+        p_u_abs = np.abs(fftn(self.get_laplacian_operator(h_u)))
+        
+        degradation = (np.divide(np.conj(h_u).transpose(), np.multiply(h_u_abs, h_u_abs) 
+                                 + self.gamma * np.multiply(p_u_abs, p_u_abs)))
+    
+        return np.real(ifftshift(ifftn(np.multiply(degradation, g_u))))
+    
+    def gaussian_filter(self, ref, k=3, sigma=1.0):
+        """
+        Produces a Gaussian filter and expands it to have the same size as the image to be filtered
+        
+        @param ref: image to be filtered
+        @param k: mask initial size
+        @param sigma: adjustment factor
+        """
+        arx = np.arange((-k // 2) + 1.0, (k // 2) + 1.0)
+        x, y = np.meshgrid(arx, arx)
+        filt = np.exp(-(1/2) * (np.square(x) + np.square(y)) / np.square(sigma))
+        filt = filt / np.sum(filt)
+        
+        padding = ref.shape[0]//2-filt.shape[0]//2
+        return np.pad(filt, (padding,padding-1), "constant",  constant_values=0)
+        
+        
+    def get_laplacian_operator(self, ref):
+        """
+        Builds a Laplacian operator to convolve it with the image. The initial operator is expanded to fit the
+        size of the image.
+        
+        @param ref: image to be filtered
+        """
+        operator = np.array([[0, -1, 0], [-1, 4, -1], [0, -1, 0]])
+        padding = ref.shape[0]//2-operator.shape[0]//2
+        
+        return np.pad(operator, (padding,padding-1), "constant",  constant_values=0)
     
 def run_restoration():
+    """
+    Restores a corrupted image computes the rmse to compare it with the original one
+    """
     ref_img_name = str(input()).rstrip()
     deg_img_name = str(input()).rstrip()
     filter_type = int(input())
@@ -209,6 +296,9 @@ def run_restoration():
 
     
 def main():
+    """
+    Runs restoration
+    """
     _, _, _, rmse = run_restoration();
     print(rmse)
 
