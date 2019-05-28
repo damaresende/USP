@@ -74,7 +74,7 @@ p = Prim(len(g.datapoints))
 #     print(row)
     
 p.build_mst(g.adjancymatrix)
-p.remove_max_vertices(4)
+# p.remove_max_vertices(4)
 
 print(p.mst)
 print(p.key)
