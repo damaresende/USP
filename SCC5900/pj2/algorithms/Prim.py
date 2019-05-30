@@ -11,7 +11,7 @@ from SCC5900.pj2.datastructures.Heap import MinHeap
 class Prim:
     def build_mst(self, graph, npoints): 
         
-        heap = MinHeap()
+        heap = MinHeap(npoints)
         key = [float('inf')] * npoints    
         result = [[-1, -1, float('inf')]] * (npoints - 1)  
 
@@ -28,7 +28,7 @@ class Prim:
             for x in range(npoints): 
                 v = graph[u * npoints + x][1]
                 
-                if heap.contains (v) and graph[u * npoints+ x][2] < key[v]: 
+                if heap.contains(v) and graph[u * npoints+ x][2] < key[v]: 
                     key[v] = graph[u * npoints + x][2]
                     result[v - 1] = [u, v, graph[u * npoints + x][2]]
   

@@ -4,8 +4,9 @@ Created on May 28, 2019
 @author: damaresresende
 '''
 class MinHeap:
-    def __init__(self):
+    def __init__(self, npoints):
         self.heap = []
+        self.vertices = {v: False for v in range(npoints)}
         
     def size(self):
         return len(self.heap)
@@ -17,6 +18,7 @@ class MinHeap:
     
     def add(self, key):
         self.heap.append(key)
+        self.vertices[key[0]] = True
         self._heapify_up(self.size() - 1)
         
     def poll(self):
@@ -26,8 +28,9 @@ class MinHeap:
         root = self.heap[0]
         
         self.heap[0] = self.heap[-1]
-        del self.heap[-1] 
+        del self.heap[-1]
         self._heapify_down(0)
+        self.vertices[root[0]] = False
         
         return root
     
@@ -38,10 +41,7 @@ class MinHeap:
         return self.heap[0]
     
     def contains(self, v):
-        for node in self.heap:
-            if node[0] == v:
-                return True
-        return False
+        return self.vertices[v]
     
     def decrease_key(self, v, weight): 
         i = self._get_pos(v)  
