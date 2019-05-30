@@ -3,10 +3,10 @@ Created on May 26, 2019
 
 @author: damaresresende
 '''
-from matplotlib import pyplot as plt
-
-
 class Kruskal:
+    def __init__(self, nclusters):
+        self.nclusters = nclusters
+        
     def build_mst(self, graph, npoints):
         i = 0
         e = 0
@@ -20,7 +20,7 @@ class Kruskal:
             parent.append(node)
             rank.append(0)
         
-        while e < npoints - 1:
+        while e < (npoints - 1) - (self.nclusters - 1):
             u, v, w = graph[i]
             i = i + 1
             x = self.find(parent, u)
@@ -49,13 +49,3 @@ class Kruskal:
         else:
             parent[yroot] = xroot
             rank[xroot] += 1
-            
-    def display_mst(self, mst, datapoints):
-        x = [p.x for p in datapoints]
-        y = [p.y for p in datapoints]
-        
-        for k in range(len(mst)):
-            plt.plot([x[mst[k][0]], x[mst[k][1]]], [y[mst[k][0]], y[mst[k][1]]], '.k-', linewidth=0.5)
-                
-        plt.scatter(x, y, s=[10 for _ in range(len(x))])
-        plt.show()

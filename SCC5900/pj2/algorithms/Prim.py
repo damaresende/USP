@@ -3,12 +3,13 @@ Created on May 25, 2019
 
 @author: damaresresende
 '''
-from matplotlib import pyplot as plt
-
 from SCC5900.pj2.datastructures.Heap import MinHeap
 
  
 class Prim:
+    def __init__(self, nclusters):
+        self.nclusters = nclusters
+    
     def build_mst(self, graph, npoints): 
         
         heap = MinHeap(npoints)
@@ -34,14 +35,16 @@ class Prim:
   
                     heap.decrease_key(v, key[v]) 
   
+        self._remove_large_edges(result)
         return result
-  
-    def display_mst(self, mst, datapoints):
-        x = [p.x for p in datapoints]
-        y = [p.y for p in datapoints]
-        
-        for k in range(len(mst)):
-            plt.plot([x[mst[k][0]], x[mst[k][1]]], [y[mst[k][0]], y[mst[k][1]]], '.k-', linewidth=0.5)
-                
-        plt.scatter(x, y, s=[10 for _ in range(len(x))])
-        plt.show()
+    
+    def _remove_large_edges(self, mst):
+        for _ in range(self.nclusters-1):
+            idx = -1
+            max_ = -float('inf')
+         
+            for i, e in enumerate(mst):
+                if e[2] > max_:
+                    max_ = e[2]
+                    idx = i
+            del mst[idx]

@@ -5,7 +5,6 @@ Created on May 28, 2019
 '''
 import os
 from math import sqrt
-from matplotlib import pyplot as plt
 
 
 class Point:
@@ -51,15 +50,3 @@ class Graph:
     
     def get_weight(self, s, v):
         return self.graph[s * self.npoints + v][2]
-    
-    def display_graph(self):
-        x = [p.x for p in self.datapoints]
-        y = [p.y for p in self.datapoints]
-        
-        for s in range(self.npoints):
-            for v in range(self.npoints):
-                if self.graph[s * self.npoints + v][2] < float('inf'):
-                    plt.plot([x[s], x[v]], [y[s], y[v]], '.k-', linewidth=0.5)
-                
-        plt.scatter(x, y, s=[20 for _ in range(len(x))])
-        plt.show()
