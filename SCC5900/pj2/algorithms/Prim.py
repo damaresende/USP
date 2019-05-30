@@ -5,7 +5,6 @@ Created on May 25, 2019
 '''
 from matplotlib import pyplot as plt
 
-from SCC5900.pj2.datastructures.Graph import Graph
 from SCC5900.pj2.datastructures.Heap import MinHeap
 
  
@@ -46,10 +45,3 @@ class Prim:
                 
         plt.scatter(x, y, s=[10 for _ in range(len(x))])
         plt.show()
-
-
-g = Graph()
-# g.display_graph()
-p = Prim() 
-mst = p.build_mst(g.graph, g.npoints) 
-p.display_mst(mst, g.datapoints)

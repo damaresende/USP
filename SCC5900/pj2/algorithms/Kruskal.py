@@ -5,19 +5,16 @@ Created on May 26, 2019
 '''
 from matplotlib import pyplot as plt
 
-from SCC5900.pj2.datastructures.Graph import Graph
-
 
 class Kruskal:
     def build_mst(self, graph, npoints):
-        result = []
-        
         i = 0
         e = 0
         
-        graph = sorted(graph, key=lambda item: item[2])
-        parent = []
         rank = []
+        result = []
+        parent = []
+        graph = sorted(graph, key=lambda item: item[2])
         
         for node in range(npoints):
             parent.append(node)
@@ -62,9 +59,3 @@ class Kruskal:
                 
         plt.scatter(x, y, s=[10 for _ in range(len(x))])
         plt.show()
-        
-g = Graph()
-# g.display_graph()
-k = Kruskal()
-mst = k.build_mst(g.graph, g.npoints)
-k.display_mst(mst, g.datapoints)
