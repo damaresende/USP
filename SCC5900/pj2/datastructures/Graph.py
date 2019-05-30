@@ -1,5 +1,5 @@
 '''
-Created on May 25, 2019
+Created on May 28, 2019
 
 @author: damaresresende
 '''
@@ -17,12 +17,13 @@ class Point:
         dx = self.x - datapoint.x
         dy = self.y - datapoint.y
         return sqrt(dx * dx + dy * dy)
-        
 
+    
 class Graph:
     def __init__(self):
         self.datapoints = self._get_data_points()
-        self.adjancymatrix = self._build_adjancy_matrix()
+        self.npoints = len(self.datapoints)
+        self.graph = self._build_graph()
         
     def _get_data_points(self):
         datapoints = []
@@ -35,28 +36,30 @@ class Graph:
                 
         return datapoints
         
-    def _build_adjancy_matrix(self):
-        npoints = len(self.datapoints)
-        adjancymatrix = [[0 for _ in range(npoints)] for _ in range(npoints)]
+    def _build_graph(self):
+        graph = [None] * self.npoints * self.npoints
         
-        for i in range(npoints):
-            for j in range(npoints):
-                if i == j:
-                    adjancymatrix[i][j] = 0
+        for s in range(self.npoints):
+            for v in range(self.npoints):
+                if s == v:
+                    graph[s * self.npoints + v] = [s, v, float('inf')]
                 else:
-                    adjancymatrix[i][j] = self.datapoints[i].calc_eucledean_distance(self.datapoints[j])
+                    weight = self.datapoints[s].calc_eucledean_distance(self.datapoints[v])
+                    graph[s * self.npoints + v] = [s, v, weight]
             
-        return adjancymatrix
+        return graph
     
-    def display_graph(self, graph):
+    def get_weight(self, s, v):
+        return self.graph[s * self.npoints + v][2]
+    
+    def display_graph(self):
         x = [p.x for p in self.datapoints]
         y = [p.y for p in self.datapoints]
         
-        for w in range(len(self.datapoints)):
-            for k in range(1, len(self.datapoints)):
-                if graph[w][k] > 0:
-                    plt.plot([x[w], x[k]], [y[w], y[k]], '.k-', linewidth=0.5)
+        for s in range(self.npoints):
+            for v in range(self.npoints):
+                if self.graph[s * self.npoints + v][2] < float('inf'):
+                    plt.plot([x[s], x[v]], [y[s], y[v]], '.k-', linewidth=0.5)
                 
-        plt.scatter(x[0], y[0], s=[10 for _ in range(len(x))])
-        plt.grid(True)
+        plt.scatter(x, y, s=[20 for _ in range(len(x))])
         plt.show()

@@ -5,7 +5,7 @@ Created on May 26, 2019
 '''
 from matplotlib import pyplot as plt
 
-from SCC5900.pj2.datastructures.GraphK import Graph
+from SCC5900.pj2.datastructures.Graph import Graph
 
 
 class Kruskal:
