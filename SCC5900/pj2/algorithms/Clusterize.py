@@ -9,32 +9,8 @@ from SCC5900.pj2.algorithms.Prim import Prim
 from SCC5900.pj2.datastructures.Graph import Graph
 from SCC5900.pj2.algorithms.Kruskal import Kruskal
 from SCC5900.pj2.algorithms import Plotter
-
-
-nclusters = 5
-g = Graph()
-
-# start_time = time.time()
-#   
-# p = Prim(nclusters) 
-# mst_prim = p.build_mst(g.graph, g.npoints)
-# print("Prim running time: %s seconds" % (time.time() - start_time))
-
-start_time = time.time()
-   
-k = Kruskal(nclusters)
-mst_kruskal = k.build_mst(g.graph, g.npoints)
-print("Kruskal running time: %s seconds" % (time.time() - start_time))
-
-# Plotter.display_mst(mst_prim, mst_kruskal, g.datapoints)
-
-mst = {v: [] for v in range(g.npoints)}
-for node in mst_kruskal:
-    mst[node[0]].append(node[1])
-    mst[node[1]].append(node[0])
     
-def DFS(graph, datapoints): 
-    cluster = []
+def DFS(graph, datapoints, klass): 
     vertices = set()
     
     def _traverse(v, visited):  
@@ -44,27 +20,46 @@ def DFS(graph, datapoints):
         for n in graph[v]: 
             if visited[n] == False: 
                 vertices.add(n)
-                cluster.append(datapoints[v])
+                datapoints[v] = klass
                 _traverse(n, visited) 
 
     visited = {key: False for key in graph} 
 
-    root = list(mst.keys())[0]
-    cluster.append(datapoints[root])
+    root = list(graph.keys())[0]
+    datapoints[root] = klass
     _traverse(root, visited)
         
     for x in vertices:
         graph.pop(x)
-    
-    return cluster    
 
-cluster = DFS(mst, g.datapoints)
-cluster = DFS(mst, g.datapoints)
+def classify(mst, nclusters):
+    graph = {v: [] for v in range(g.npoints)}
+    for node in mst:
+        graph[node[0]].append(node[1])
+        graph[node[1]].append(node[0])
+        
+    classes = [-1] * len(g.datapoints)
+    for k in range(nclusters):
+        DFS(graph, classes, k)
+        
+    return classes
 
-from matplotlib import pyplot as plt
+nclusters = 6
+g = Graph()
 
-x = [p.x for p in cluster]
-y = [p.y for p in cluster]
+start_time = time.time()
+   
+p = Prim(nclusters) 
+mst_prim = p.build_mst(g.graph, g.npoints)
+print("Prim running time: %s seconds" % (time.time() - start_time))
 
-plt.scatter(x, y, s=[40 for _ in range(len(x))])
-plt.show()
+start_time = time.time()
+   
+k = Kruskal(nclusters)
+mst_kruskal = k.build_mst(g.graph, g.npoints)
+print("Kruskal running time: %s seconds" % (time.time() - start_time))
+
+classes_p = classify(mst_prim, nclusters)
+classes_k = classify(mst_kruskal, nclusters)
+
+Plotter.display_mst(mst_prim, mst_kruskal, classes_p, classes_k, g.datapoints)
