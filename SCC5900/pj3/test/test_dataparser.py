@@ -1,5 +1,5 @@
 '''
-Tests for module imgenerator
+Tests for module dataparser
 
 @author: Damares Resende
 @contact: damaresresende@usp.br
