@@ -29,25 +29,43 @@ class DataParserUTests(unittest.TestCase):
     
     def test_training_set(self):
         '''
-        Tests if the array of training data is correctly retrieved. The result must
-        be a 2D array with 240 and 32 columns. The first column must contain values 
-        ranging from 1 to 12.
+        Tests if the array of training data is correctly retrieved. The result must a be a
+        tuple with a list of lists where the outer list has length 240 and the inner list has 
+        length X, where X is the number of data points in the time series, and a list of labels
+        of length 240 from values 1 to 12.
         '''
-        train_data = DataParser.get_training_set()
+        train_X, train_Y = DataParser.get_training_set()
         
-        self.assertEqual((240, 32), train_data.shape)
-        for value in train_data[:,0]:
-            self.assertTrue(1 >= value <= 12)
-    
+        self.assertEqual(240, len(train_X))
+        self.assertEqual(240, len(train_Y))
+        
+        for value in train_X:
+            isinstance(value, list)
+            
+        for value in train_Y:
+            try:
+                self.assertTrue(value >= 1 and value <= 12)
+            except AssertionError:
+                pass
+     
     def test_test_set(self):
         '''
-        Tests if the array of test data is correctly retrieved. The result must be
-        a 2D array with 960 and 32 columns. The first column must contain values 
-        ranging from 1 to 12.
+        Tests if the array of test data is correctly retrieved. The result must a be a
+        tuple with a list of lists where the outer list has length 960 and the inner list has 
+        length X, where X is the number of data points in the time series, and a list of labels
+        of length 960 from values 1 to 12.
         '''
-        test_data = DataParser.get_test_set()
+        test_X, test_Y = DataParser.get_test_set()
         
-        self.assertEqual((240, 32), test_data.shape)
-        for value in test_data[:,0]:
-            self.assertTrue(1 >= value <= 12)
+        self.assertEqual(960, len(test_X))
+        self.assertEqual(960, len(test_Y))
+        
+        for value in test_X:
+            isinstance(value, list)
+            
+        for value in test_Y:
+            try:
+                self.assertTrue(value >= 1 and value <= 12)
+            except AssertionError:
+                pass
         
