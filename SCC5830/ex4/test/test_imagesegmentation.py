@@ -24,7 +24,7 @@ class IMGSegmentationTests(unittest.TestCase):
         super(IMGSegmentationTests, cls).setUpClass()
      
     def test_segmentation(self):
-        user_input = ['files/test_image.png', 'files/test_image.png', '2', '5', '10', '55']
+        user_input = ['files/test_image.png', 'files/ref_image.jpg', '4', '6', '16', '25']
         expected_output = 2.8527
         left_bound = expected_output - expected_output * 0.2
         right_bound = expected_output + expected_output * 0.2
@@ -43,8 +43,8 @@ class IMGSegmentationTests(unittest.TestCase):
         plt.imshow(ipt_img.astype(np.uint8))
         plt.subplot(132)
         plt.title('Reference')
-        plt.imshow(ref_img.astype(np.uint8))
+        plt.imshow(ref_img.astype(np.uint8), cmap="gray", vmin=0, vmax=255)
         plt.subplot(133)
         plt.title('Output')
-        plt.imshow(cmp_img.astype(np.uint8))
+        plt.imshow(cmp_img.astype(np.uint8), cmap="gray", vmin=0, vmax=255)
         plt.show()
