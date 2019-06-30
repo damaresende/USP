@@ -147,8 +147,7 @@ class TSAnalysis:
         '''
         # Searches for nearest neighbor in parallel
         pool = mp.Pool(mp.cpu_count())
-        res = pool.starmap_async(self.dtw_constrained_plus, 
-                                 [(test_sample, train_sample, w, k) 
+        res = pool.starmap_async(self.dtw_constrained, [(test_sample, train_sample, w, k) 
                                   for k, train_sample in enumerate(self.x_train)]).get()
         pool.close()
                 
