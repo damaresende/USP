@@ -48,7 +48,7 @@ class DataParser:
                 for line in f.readlines():
                     values = [float(v.strip()) for v in line.split()]
                     data.append(values[1:])
-                    labels.append(values[0])
+                    labels.append(int(values[0]))
 
             return data, labels
         
@@ -74,7 +74,7 @@ class DataParser:
                 for line in f.readlines():
                     values = [float(v.strip()) for v in line.split()]
                     data.append(values[1:])
-                    labels.append(values[0])
+                    labels.append(int(values[0]))
 
             return data, labels
         
