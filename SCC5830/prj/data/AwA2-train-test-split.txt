@@ -1,0 +1,15 @@
+TRAIN
+5	dalmatian
+7	horse
+13	tiger
+25	chimpanzee
+39	giant+panda
+38	zebra
+20	gorilla
+6	persian+cat
+15	leopard
+
+TEST
+49	cow
+43	lion
+17	spider+monkey

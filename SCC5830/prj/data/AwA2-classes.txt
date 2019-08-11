@@ -1,0 +1,12 @@
+5	dalmatian
+6	persian+cat
+7	horse
+13	tiger
+15	leopard
+17	spider+monkey
+20	gorilla
+25	chimpanzee
+38	zebra
+39	giant+panda
+43	lion
+49	cow
