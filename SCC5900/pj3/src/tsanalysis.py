@@ -11,6 +11,7 @@ based on DTW.
     Institute of Mathematics and Computer Science (ICMC) 
     Project of Algorithms Class (SCC5000)
 '''
+import sys
 import time
 import multiprocessing as mp
 
@@ -19,10 +20,11 @@ from SCC5900.pj3.src.dataparser import DataParser
 
 class TSAnalysis:
 
-    def __init__(self, verbose=False):
+    def __init__(self, type_, verbose=False):
         '''
         Sets verbose mode
         '''
+        self.type_ = type_
         self.verbose = verbose
         self.labels = DataParser.get_labels()
         self.x_train, self.y_train = DataParser.get_training_set()
@@ -38,7 +40,7 @@ class TSAnalysis:
         c = a - b
         return c * c
     
-    def dtw(self, tsa, tsb):
+    def dtw(self, tsa, tsb, k):
         '''
         Applies DTW algorithm to calculate the distance between two time series.
         The distance is computed by taking into consideration all data points of
@@ -68,7 +70,7 @@ class TSAnalysis:
                                                              memo[i][j - 1], 
                                                              memo[i - 1][j])
 
-        return memo[m-1][n-1]
+        return (memo[m-1][n-1], k)
     
     def dtw_constrained(self, tsa, tsb, w, k):
         '''
@@ -147,8 +149,16 @@ class TSAnalysis:
         '''
         # Searches for nearest neighbor in parallel
         pool = mp.Pool(mp.cpu_count())
-        res = pool.starmap_async(self.dtw_constrained, [(test_sample, train_sample, w, k) 
-                                  for k, train_sample in enumerate(self.x_train)]).get()
+        if self.type_ == '-dtwcp':
+            res = pool.starmap_async(self.dtw_constrained_plus, [(test_sample, train_sample, w, k) 
+                                      for k, train_sample in enumerate(self.x_train)]).get()
+        elif self.type_ == '-dtw':
+            res = pool.starmap_async(self.dtw, [(test_sample, train_sample, k) 
+                                      for k, train_sample in enumerate(self.x_train)]).get()
+        else:
+            res = pool.starmap_async(self.dtw_constrained, [(test_sample, train_sample, w, k) 
+                                      for k, train_sample in enumerate(self.x_train)]).get()
+            
         pool.close()
                 
         klass = self.y_train[min(res, key=lambda v : v[0])[1]]
@@ -195,14 +205,29 @@ class TSAnalysis:
         minutes, seconds = divmod(rem, 60)
         return '{:0>2}h {:0>2}min {:05.2f}sec'.format(int(hours), int(minutes), seconds)
 
-# Initializes objects
-ts = TSAnalysis(verbose=True) # classifies series
-x_test, y_test = DataParser.get_test_set() # retrieves test set and labels
-
-init_time = time.time() # starts timer
-klass = [ts.one_nn(sample, x, 20) for x, sample in enumerate(x_test)]
-
-time_elapsed = ts.format_elapsed_time(time.time() - init_time) # formats elapsed time string
-
-print('Total Elapsed time is %s' % time_elapsed)
-print('Classification Accuracy: %f %%' % (ts.calc_accuracy(klass, y_test) * 100))
+if __name__ == '__main__':
+    
+    # Get input parameter to define DTW type
+    if len(sys.argv) > 1:
+        type_ = sys.argv
+        if type_ == '-dtwcp':
+            print('Running DTW Constrained Plus...\n')
+        elif type_ == '-dtw':
+            print('Running DTW Common...\n')
+        else:
+            print('Invalid Input. Running default algorithm: DTW Constrained...\n')
+    else:
+        type_ = '-dtwc'
+        print('Running DTW Constrained...\n')
+    
+    # Initializes objects
+    ts = TSAnalysis(type_, verbose=True) # classifies series
+    x_test, y_test = DataParser.get_test_set() # retrieves test set and labels
+    
+    init_time = time.time() # starts timer
+    klass = [ts.one_nn(sample, x, 20) for x, sample in enumerate(x_test)]
+    
+    time_elapsed = ts.format_elapsed_time(time.time() - init_time) # formats elapsed time string
+    
+    print('\nTotal Elapsed time is %s' % time_elapsed)
+    print('Classification Accuracy: %f %%' % (ts.calc_accuracy(klass, y_test) * 100))
