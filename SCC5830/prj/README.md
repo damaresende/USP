@@ -13,9 +13,9 @@ The main tasks for this application are object detection, object segmentation, a
 
 An example of input image is given bellow:
 
-![alt text](https://github.com/damaresende/SCC5830/blob/master/images/fox_10154.jpg)
+![alt text](https://github.com/damaresende/USP/blob/master/SCC5830/prj/images/fox_10154.jpg)
 
-More examples can be found [here](https://github.com/damaresende/SCC5830/tree/master/images). The list of attributes can be found [here](https://github.com/damaresende/SCC5830/blob/master/data/AwA2-predicates.txt).
+More examples can be found [here](https://github.com/damaresende/USP/blob/master/SCC5830/prj/images/). The list of attributes can be found [here](https://github.com/damaresende/USP/blob/master/SCC5830/prj/images/AwA2-predicates.txt).
 
 ## Dataset Details
 
@@ -85,9 +85,9 @@ The array of semantic characteristics is already provided by the authors of *Ani
 
 A schema of the deep learning model is given below, where the transfer learning technique is used. ResNet101 performs the heavy computation responsible for feature extraction, which consists of image processing operations such as morphology, segmentation, color and texture analysis, filtering, edge-detection, keypoint detection and etc. And the projection model is responsible for the clusterization of similar visual features and projection of them into a semantic space.
 
-![alt text](https://github.com/damaresende/SCC5830/blob/master/images/zero_shot_model.png)
+![alt text](https://github.com/damaresende/USP/blob/master/SCC5830/prj/images/zero_shot_model.png)
 
-The idea is to train a regression model, here called projection model, to construct a function *f(x)* capable of predicting the semantic values *v* that represent the input image *x*. For that, a simple deep neural network was built using the Keras framework. The input is the set of visual features. The target values are the set of semantic attributes. This network is trained for 150 epochs with a batch size of 256, where 80% of the data is used for training and the remaining for validating the model. The summary of this model can be found [here](https://github.com/damaresende/SCC5830/blob/master/results/summary.txt).
+The idea is to train a regression model, here called projection model, to construct a function *f(x)* capable of predicting the semantic values *v* that represent the input image *x*. For that, a simple deep neural network was built using the Keras framework. The input is the set of visual features. The target values are the set of semantic attributes. This network is trained for 150 epochs with a batch size of 256, where 80% of the data is used for training and the remaining for validating the model. The summary of this model can be found [here](https://github.com/damaresende/USP/blob/master/SCC5830/prj/results/summary.txt).
 
 Once *f(x)* is defined, zero-shot learning can be applied. In this context, a given image *I*, which class does not belong to the set of classes used to train the regressor, is used as input to the model. Then, the network predicts the image's set of semantic attributes *G*. Later, a simple *1-NN* classification model compares G to the set of semantic descriptors available by taking the Euclidean Distance between them. The one closest to *G* is chosen to represent that class, finally defining a label.
 
@@ -95,17 +95,17 @@ Once *f(x)* is defined, zero-shot learning can be applied. In this context, a gi
 
 The figure below shows the results for classification accuracy and loss while training the model. These results indicate that the model converges. Training loss ends at around 22 and validation loss circa 453. Even though the values are high, for a regression model with 24 values to predict its performance is acceptable. In contrast, the training and validation accuracies reach 76%, which is a reasonable result.
 
-![alt text](https://github.com/damaresende/SCC5830/blob/master/results/performance.png)
+![alt text](https://github.com/damaresende/USP/blob/master/SCC5830/prj/results/performance.png)
 
 Despite the fact that the regression model converges during training when testing it against the unseen data, its performance drops to 1/10 of random classification (3.7037 %), which is an awful result. This indicates that the model is able to predict the classes that are known but is not generalized enough to classify unknown data. To mitigate that several approaches were tested, such as adding dropout layers to the neural network, increasing and decreasing its depth or number of neurons per layer, changing the loss and the optimizer used and changing from binary to continuous semantic representations. However, none of the approaches worked as expected.
 
 One of the reasons for that to happen can be the oversimplification of the problem and the fact that the loss function is too restrictive. In future works, custom loss functions and different groups of classes and attributes will be tested seeking to improve this performance. In addition, other classifies other than *1-KK* can be used.
 
-On the other hand, one interesting result was reached. For most cases, *cow* was misclassified with *horse*, *lion* was misclassified with *tiger*, *leopard* and *chimpanzee*, and *spider+monkey* was misclassified with *chimpanzee*, as can be observed from the [prediction results](https://github.com/damaresende/SCC5830/blob/master/results/prediction.txt). This result indicates that, except for the *lion* with *chimpanzee*, most classifications converges to an animal that is somehow similar to the one that the model is supposed to classify. Therefore, even though the zero-shot accuracy is not what expected, the model can indeed predict semantic characteristics for each animal.
+On the other hand, one interesting result was reached. For most cases, *cow* was misclassified with *horse*, *lion* was misclassified with *tiger*, *leopard* and *chimpanzee*, and *spider+monkey* was misclassified with *chimpanzee*, as can be observed from the [prediction results](https://github.com/damaresende/USP/blob/master/SCC5830/prj/results/prediction.txt). This result indicates that, except for the *lion* with *chimpanzee*, most classifications converges to an animal that is somehow similar to the one that the model is supposed to classify. Therefore, even though the zero-shot accuracy is not what expected, the model can indeed predict semantic characteristics for each animal.
 
 ## Code Details
 
-The code is written in Python 3 and the framework Keras is used to apply deep learning algorithms. Source code can be found [here](https://github.com/damaresende/SCC5830/tree/master/src), and test code [here](https://github.com/damaresende/SCC5830/tree/master/test). Dataset, classes, labels and attributes definition can be found [here](https://github.com/damaresende/SCC5830/tree/master/data). Results are stored [here](https://github.com/damaresende/SCC5830/tree/master/results).
+The code is written in Python 3 and the framework Keras is used to apply deep learning algorithms. Source code can be found [here](https://github.com/damaresende/SCC5830/tree/master/src), and test code [here](https://github.com/damaresende/USP/blob/master/SCC5830/prj/test). Dataset, classes, labels and attributes definition can be found [here](https://github.com/damaresende/USP/blob/master/SCC5830/prj/data). Results are stored [here](https://github.com/damaresende/SCC5830/tree/master/results).
 
 #### annotationsparser.py
 
